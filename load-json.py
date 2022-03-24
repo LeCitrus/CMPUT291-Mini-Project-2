@@ -1,3 +1,5 @@
+# Make MongoDB collection from the 4 .jsons
+# Port number input, connect to server, create 291db.db
 from pymongo import MongoClient
 import json
 
@@ -15,3 +17,9 @@ def clear_collections():
     title_basics.drop()
     title_principals.drop()
     title_ratings.drop()
+while True:
+   try:
+        port = int(input("Enter port number: "))
+        break
+   except ValueError:
+        print("Invalid input!")
