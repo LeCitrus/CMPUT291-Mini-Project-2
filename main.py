@@ -66,7 +66,7 @@ def task_3():
 
 
 # Add a movie
-def task_4():
+def task_4(db):
     os.system(clr)
     mid = input("Enter unique MID: ")
     title = input("Enter title: ")
@@ -83,6 +83,7 @@ def task_4():
         except ValueError:
             print("Invalid input!")
     genres = list(input("Enter genre(s), separated by spaces (eg. action cOmEdy HORROR): ").split())
+    db.title_basics.insert({"uid": 100})
 
 
 # Add a cast/crew member
@@ -96,6 +97,16 @@ def task_5():
 # Main program
 def main():
     port = get_port()
+    client = MongoClient("localhost", port)
+
+    # Open database
+    db = client["291db"]
+
+    # Open all the collections
+    name_basics = db["name_basics"]
+    title_basics = db["title_basics"]
+    title_principals = db["title_principals"]
+    title_ratings = db["title_ratings"]
     while True:
         print_main_menu()
         task = get_task()
@@ -111,7 +122,7 @@ def main():
             task_3()
             input("\n*Enter key to go back*")
         elif task == 4:
-            task_4()
+            task_4(db)
             input("\n*Enter key to go back*")
         elif task == 5:
             task_5()
