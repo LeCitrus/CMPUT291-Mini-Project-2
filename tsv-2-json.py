@@ -1,3 +1,5 @@
+# Convert .tsv files from current directory .json.
+# Nested array columns primaryProfession, knownForTitles, genres, characters
 import json
   
 def tsv2json(input_file,output_file):
