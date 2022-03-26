@@ -66,7 +66,7 @@ def task_3():
 
 
 # Add a movie
-def task_4(db):
+def task_4(db, title_basics):
     os.system(clr)
     mid = input("Enter unique MID: ")
     title = input("Enter title: ")
@@ -83,7 +83,7 @@ def task_4(db):
         except ValueError:
             print("Invalid input!")
     genres = list(input("Enter genre(s), separated by spaces (eg. action cOmEdy HORROR): ").split())
-    db.title_basics.insert({"_id": mid,
+    db.title_basics.insertOne({"_id": mid,
                             "titleType": "movie",
                             "primaryTitle": title,
                             "originalTitle": title,
@@ -95,11 +95,12 @@ def task_4(db):
                             
 
 # Add a cast/crew member
-def task_5():
+def task_5(db, name_basics, title_basics, title_principals):
     os.system(clr)
     cid = input("Enter CID: ")
     title = input("Enter title id: ")
     category = input("Enter category: ")
+    db.name_basics.find()
 
 
 # Main program
@@ -130,10 +131,10 @@ def main():
             task_3()
             input("\n*Enter key to go back*")
         elif task == 4:
-            task_4(db)
+            task_4(db, title_basics)
             input("\n*Enter key to go back*")
         elif task == 5:
-            task_5()
+            task_5(db, name_basics, title_basics, title_principals)
             input("\n*Enter key to go back*")
 
 
