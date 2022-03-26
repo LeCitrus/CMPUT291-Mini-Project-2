@@ -83,8 +83,16 @@ def task_4(db):
         except ValueError:
             print("Invalid input!")
     genres = list(input("Enter genre(s), separated by spaces (eg. action cOmEdy HORROR): ").split())
-    db.title_basics.insert({"uid": 100})
-
+    db.title_basics.insert({"_id": mid,
+                            "titleType": "movie",
+                            "primaryTitle": title,
+                            "originalTitle": title,
+                            "isAdult": "\N",
+                            "startYear": year,
+                            "endYear": "\N",
+                            "runtimeMinutes": running_time,
+                            "genres": genres})
+                            
 
 # Add a cast/crew member
 def task_5():
