@@ -68,7 +68,12 @@ def task_3():
 # Add a movie
 def task_4(db, title_basics):
     os.system(clr)
-    mid = input("Enter unique MID: ")
+    while True:
+        mid = input("Enter unique MID: ")
+        print(db.title_basics.find_one())
+        if not db.title_basics.find_one():
+            break
+        print("ID already exists!")
     title = input("Enter title: ")
     while True:
         try:
@@ -83,13 +88,13 @@ def task_4(db, title_basics):
         except ValueError:
             print("Invalid input!")
     genres = list(input("Enter genre(s), separated by spaces (eg. action cOmEdy HORROR): ").split())
-    db.title_basics.insertOne({"_id": mid,
+    db.title_basics.insert_one({"_id": mid,
                             "titleType": "movie",
                             "primaryTitle": title,
                             "originalTitle": title,
-                            "isAdult": "\N",
+                            "isAdult": "NULL",
                             "startYear": year,
-                            "endYear": "\N",
+                            "endYear": "NULL",
                             "runtimeMinutes": running_time,
                             "genres": genres})
                             
@@ -116,6 +121,7 @@ def main():
     title_basics = db["title_basics"]
     title_principals = db["title_principals"]
     title_ratings = db["title_ratings"]
+
     while True:
         print_main_menu()
         task = get_task()
