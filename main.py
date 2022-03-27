@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import json
+from pprint import pprint
 import os
 
 # For clearing terminal
@@ -13,7 +13,7 @@ else:
 def get_port():
     while True:
         try:
-            port = int(input("Enter port number: ")).strip()
+            port = int(input("Enter port number: ").strip())
             return port
         except ValueError:
             print("Invalid input!")
@@ -31,7 +31,7 @@ def print_main_menu():
 def get_task():
     while True:
         try:
-            inp = int(input("Execute task: ")).strip()
+            inp = int(input("Execute task: ").strip())
             if inp in (1, 2, 3, 4, 5, 6):
                 return inp
             else:
@@ -41,26 +41,26 @@ def get_task():
 
 
 # Search for titles
-def task_1():
+def task_1(db):
     os.system(clr)
     keywords = list(input("Enter 1 or more keywords, separated by spaces (eg. cmput MaTh DAVOOD): ").split())
     print('pog')
 
 
 # Search for genres
-def task_2():
+def task_2(db, title_ratings):
     os.system(clr)
     genre = input("Enter genre: ").strip()
     while True:
         try:
-            count = int(input("Enter minimum vote count: ")).strip()
+            count = int(input("Enter minimum vote count: ").strip())
             break
         except ValueError:
             print("Please enter an integer.")
 
 
 # Search for cast/crew members
-def task_3():
+def task_3(db):
     os.system(clr)
     name = input("Enter cast/crew member name: ").strip()
 
@@ -72,7 +72,7 @@ def task_4(db, title_basics):
         mid = input("Enter unique MID: ").strip()
 
         # Make sure unique MID
-        if not db.title_basics.find_one({"_id": mid}):
+        if not db.title_basics.find_one({"tconst": mid}):
             break
 
         print("Movie ID already exists!")
@@ -82,7 +82,7 @@ def task_4(db, title_basics):
     # Make sure year is int
     while True:
         try:
-            year = int(input("Enter start year: ")).strip()
+            year = int(input("Enter start year: ").strip())
             break
         except ValueError:
             print("Invalid input!")
@@ -90,7 +90,7 @@ def task_4(db, title_basics):
     # Make sure running time is int
     while True:
         try:
-            running_time = int(input("Enter running time: ")).strip()
+            running_time = int(input("Enter running time: ").strip())
             break
         except ValueError:
             print("Invalid input!")
@@ -98,7 +98,7 @@ def task_4(db, title_basics):
     genres = list(input("Enter genre(s), separated by spaces (eg. action cOmEdy HORROR): ").split())
 
     # Add movie to title_basics
-    db.title_basics.insert_one({"_id": mid,
+    db.title_basics.insert_one({"tconst": mid,
                             "titleType": "movie",
                             "primaryTitle": title,
                             "originalTitle": title,
@@ -109,7 +109,9 @@ def task_4(db, title_basics):
                             "genres": genres})
 
     # Confirm movie has been added
-    print("\nAdded to title_basics: ", db.title_basics.find_one({"_id": mid}))
+    print("\n----------------------------\nAdded to title_basics: ")
+    pprint(db.title_basics.find_one({"tconst": mid}, {"_id": 0}), sort_dicts=False)
+    print("----------------------------")
                             
 
 # Add a cast/crew member
@@ -119,27 +121,48 @@ def task_5(db, name_basics, title_basics, title_principals):
     # Make sure cast ID exists
     while True:
         cid = input("Enter CID: ").strip()
-        if db.name_basics.find_one({"_id": cid}):
+        if db.name_basics.find_one({"nconst": cid}):
             break
         print("Cast ID does not exist!")
     
     # Make sure title ID exists
     while True:
         mid = input("Enter MID: ").strip()
-        if db.title_basics.find_one({"_id": mid}):
+        if db.title_basics.find_one({"tconst": mid}):
             break
         print("Movie ID does not exist!")
     
     category = input("Enter category: ").strip()
-    db.title_principals.aggregate(
-        {"$max": {"$match": {"_id"[0]: 5}}}
-    )
 
-    db.title_principals.insert_one({"_id": [mid, cid],
-                                    "ordering": 1,
+    # Find largest ordering listed
+    ordering = list(db.title_principals.aggregate([
+        {"$match": {"tconst": mid}},
+        {"$group": {"_id": "$tconst", "max": {"$max": "$ordering"}}},
+        {"$project": {"_id": 0}}
+    ]))
+
+    # Set the new insert's ordering to 1, or largest ordering + 1
+    if ordering:
+        ordering = int(ordering[0]["max"]) + 1
+    else:
+        ordering = 1
+
+    # Insert the cast/crew member
+    db.title_principals.insert_one({"tconst": mid,
+                                    "ordering": ordering,
+                                    "nconst": cid,
                                     "category": category,
                                     "job": None,
                                     "characters": None})
+
+    # Confirm cast/crew member added
+    print("\n----------------------------\nAdded to title_principals: ")
+    pprint(db.title_principals.find_one({"$and": [
+        {"tconst": mid},
+        {"ordering": ordering}
+        ]},
+        {"_id": 0}), sort_dicts=False)
+    print("----------------------------")
 
 
 # Main program
@@ -162,13 +185,13 @@ def main():
         if task == 6:
             quit("Goodbye!")
         elif task == 1:
-            task_1()
+            task_1(db)
             input("\n*Enter key to go back*")
         elif task == 2:
-            task_2()
+            task_2(db, title_ratings)
             input("\n*Enter key to go back*")
         elif task == 3:
-            task_3()
+            task_3(db)
             input("\n*Enter key to go back*")
         elif task == 4:
             task_4(db, title_basics)
