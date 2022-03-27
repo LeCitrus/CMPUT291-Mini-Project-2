@@ -1,4 +1,8 @@
-a) 
+a) tsv-2-json.py 
+load-json.py
+main.py has the simple query interface and all of phase 2 functionality. It gets a valid port number before going to the main menu.
+The main menu has 6 options: the 5 tasks and exit program. For each task, after the output is printed the user presses enter to clear the screen and 
+go back to the main menu. The main menu loops until the exit program option is selected.
 
 b) 
 

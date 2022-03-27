@@ -6,3 +6,5 @@ Seth Rinehart - rinehart
 We collaborated with Joshua Ji.
 
 https://www.geeksforgeeks.org/python-tsv-conversion-to-json/
+https://pymongo.readthedocs.io/en/stable/tutorial.html
+https://www.mongodb.com/docs/manual/

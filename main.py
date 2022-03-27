@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from pymongo.errors import ServerSelectionTimeoutError
 from pprint import pprint
 import os
 
@@ -106,7 +107,8 @@ def task_4(db, title_basics):
                             "startYear": year,
                             "endYear": None,
                             "runtimeMinutes": running_time,
-                            "genres": genres})
+                            "genres": genres
+    })
 
     # Confirm movie has been added
     print("\n----------------------------\nAdded to title_basics: ")
@@ -153,22 +155,30 @@ def task_5(db, name_basics, title_basics, title_principals):
                                     "nconst": cid,
                                     "category": category,
                                     "job": None,
-                                    "characters": None})
+                                    "characters": None
+    })
 
     # Confirm cast/crew member added
     print("\n----------------------------\nAdded to title_principals: ")
     pprint(db.title_principals.find_one({"$and": [
-        {"tconst": mid},
-        {"ordering": ordering}
+            {"tconst": mid},
+            {"ordering": ordering}
         ]},
-        {"_id": 0}), sort_dicts=False)
+        {"_id": 0}), sort_dicts=False
+    )
     print("----------------------------")
 
 
 # Main program
 def main():
-    port = get_port()
-    client = MongoClient("localhost", port)
+    while True:
+        port_num = get_port()
+        try:
+            client = MongoClient(host = "localhost", port = port_num, serverSelectionTimeoutMS = 1)
+            client.server_info()
+            break
+        except ServerSelectionTimeoutError:
+            print("Invalid port number!")
 
     # Open database
     db = client["291db"]
@@ -181,6 +191,7 @@ def main():
 
     while True:
         print_main_menu()
+
         task = get_task()
         if task == 6:
             quit("Goodbye!")
