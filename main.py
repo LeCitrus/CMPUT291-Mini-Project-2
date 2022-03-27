@@ -13,7 +13,7 @@ else:
 def get_port():
     while True:
         try:
-            port = int(input("Enter port number: "))
+            port = int(input("Enter port number: ")).strip()
             return port
         except ValueError:
             print("Invalid input!")
@@ -31,7 +31,7 @@ def print_main_menu():
 def get_task():
     while True:
         try:
-            inp = int(input("Execute task: "))
+            inp = int(input("Execute task: ")).strip()
             if inp in (1, 2, 3, 4, 5, 6):
                 return inp
             else:
@@ -50,10 +50,10 @@ def task_1():
 # Search for genres
 def task_2():
     os.system(clr)
-    genre = input("Enter genre: ")
+    genre = input("Enter genre: ").strip()
     while True:
         try:
-            count = int(input("Enter minimum vote count: "))
+            count = int(input("Enter minimum vote count: ")).strip()
             break
         except ValueError:
             print("Please enter an integer.")
@@ -62,14 +62,14 @@ def task_2():
 # Search for cast/crew members
 def task_3():
     os.system(clr)
-    name = input("Enter cast/crew member name: ")
+    name = input("Enter cast/crew member name: ").strip()
 
 
 # Add a movie
 def task_4(db, title_basics):
     os.system(clr)
     while True:
-        mid = input("Enter unique MID: ")
+        mid = input("Enter unique MID: ").strip()
 
         # Make sure unique MID
         if not db.title_basics.find_one({"_id": mid}):
@@ -77,12 +77,12 @@ def task_4(db, title_basics):
 
         print("Movie ID already exists!")
 
-    title = input("Enter title: ")
+    title = input("Enter title: ").strip()
 
     # Make sure year is int
     while True:
         try:
-            year = int(input("Enter start year: "))
+            year = int(input("Enter start year: ")).strip()
             break
         except ValueError:
             print("Invalid input!")
@@ -90,7 +90,7 @@ def task_4(db, title_basics):
     # Make sure running time is int
     while True:
         try:
-            running_time = int(input("Enter running time: "))
+            running_time = int(input("Enter running time: ")).strip()
             break
         except ValueError:
             print("Invalid input!")
@@ -118,20 +118,28 @@ def task_5(db, name_basics, title_basics, title_principals):
 
     # Make sure cast ID exists
     while True:
-        cid = input("Enter CID: ")
+        cid = input("Enter CID: ").strip()
         if db.name_basics.find_one({"_id": cid}):
             break
         print("Cast ID does not exist!")
     
     # Make sure title ID exists
     while True:
-        title = input("Enter title id: ")
-        if db.title_basics.find_one({"_id": title}):
+        mid = input("Enter MID: ").strip()
+        if db.title_basics.find_one({"_id": mid}):
             break
         print("Movie ID does not exist!")
     
-    category = input("Enter category: ")
-    db.name_basics.find()
+    category = input("Enter category: ").strip()
+    db.title_principals.aggregate(
+        {"$max": {"$match": {"_id"[0]: 5}}}
+    )
+
+    db.title_principals.insert_one({"_id": [mid, cid],
+                                    "ordering": 1,
+                                    "category": category,
+                                    "job": None,
+                                    "characters": None})
 
 
 # Main program
