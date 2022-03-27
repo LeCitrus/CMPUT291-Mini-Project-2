@@ -70,40 +70,66 @@ def task_4(db, title_basics):
     os.system(clr)
     while True:
         mid = input("Enter unique MID: ")
-        print(db.title_basics.find_one())
-        if not db.title_basics.find_one():
+
+        # Make sure unique MID
+        if not db.title_basics.find_one({"_id": mid}):
             break
-        print("ID already exists!")
+
+        print("Movie ID already exists!")
+
     title = input("Enter title: ")
+
+    # Make sure year is int
     while True:
         try:
             year = int(input("Enter start year: "))
             break
         except ValueError:
             print("Invalid input!")
+
+    # Make sure running time is int
     while True:
         try:
             running_time = int(input("Enter running time: "))
             break
         except ValueError:
             print("Invalid input!")
+        
     genres = list(input("Enter genre(s), separated by spaces (eg. action cOmEdy HORROR): ").split())
+
+    # Add movie to title_basics
     db.title_basics.insert_one({"_id": mid,
                             "titleType": "movie",
                             "primaryTitle": title,
                             "originalTitle": title,
-                            "isAdult": "NULL",
+                            "isAdult": None,
                             "startYear": year,
-                            "endYear": "NULL",
+                            "endYear": None,
                             "runtimeMinutes": running_time,
                             "genres": genres})
+
+    # Confirm movie has been added
+    print("\nAdded to title_basics: ", db.title_basics.find_one({"_id": mid}))
                             
 
 # Add a cast/crew member
 def task_5(db, name_basics, title_basics, title_principals):
     os.system(clr)
-    cid = input("Enter CID: ")
-    title = input("Enter title id: ")
+
+    # Make sure cast ID exists
+    while True:
+        cid = input("Enter CID: ")
+        if db.name_basics.find_one({"_id": cid}):
+            break
+        print("Cast ID does not exist!")
+    
+    # Make sure title ID exists
+    while True:
+        title = input("Enter title id: ")
+        if db.title_basics.find_one({"_id": title}):
+            break
+        print("Movie ID does not exist!")
+    
     category = input("Enter category: ")
     db.name_basics.find()
 
