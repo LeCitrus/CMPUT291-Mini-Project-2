@@ -63,7 +63,9 @@ def task_2(db, title_basics, title_ratings):
         except ValueError:
             print("Please enter an integer.")
 
-    db.title_basics.find({"tconst": {"$regex": genre, "$options": "i"}}, {"_id": 0})
+    titles = db.title_basics.find({"genres": {"$elemMatch": {"$regex": genre, "$options": "i"}}}, {"_id": 0})    
+    for title in titles:
+        print(title)
 
 # Search for cast/crew members
 def task_3(db, name_basics, title_basics, title_principals):
