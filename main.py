@@ -66,7 +66,7 @@ def task_2(db, title_basics, title_ratings):
     db.title_basics.find({"tconst": {"$regex": genre, "$options": "i"}}, {"_id": 0})
 
 # Search for cast/crew members
-def task_3(db, name_basics):
+def task_3(db, name_basics, title_basics, title_principals):
     os.system(clr)
     name = input("Enter cast/crew member name: ").strip()
     
@@ -78,14 +78,46 @@ def task_3(db, name_basics):
 
     else:
 
-        # Print professions of each member
-        print(divider + "\n")
-        for person in persons:
-            print("{:^14}    {:^40}".format("Cast ID", "Professions"))
-            print("-" * 14 + " " * 4 + "-" * 40)
-            print("{:^14}    {:^40}".format(person["nconst"], ', '.join(person["primaryProfession"])))
-            print("\n")  
+        # Print professions and movies of each member
         print(divider)
+        for person in persons:
+            print("\nProfessions\n")
+            print("{:^14}    {:^50}".format("Cast ID", "Professions"))
+            print("-" * 14 + " " * 4 + "-" * 50)
+            print("{:^14}    {:^50}".format(person["nconst"], ', '.join(person["primaryProfession"])))
+            print("\n")  
+
+            # Find titles that cast member is in
+            titles = (list(db.title_principals.aggregate([
+                {"$match": {"nconst": person["nconst"]}},
+                {"$lookup": {
+                    "from": "title_basics",
+                    "localField": "tconst",
+                    "foreignField": "tconst",
+                    "as": "primaryTitle"}
+                    }
+            ])))
+
+            # Print movies of the member
+            print("Movies\n")
+            print("{:^40}      {:^10}      {:^30}      {:^40}".format("Title", "ID", "Job", "Characters"))
+            print("-" * 40 + " " * 6 + "-" * 10 + " " * 6 + "-" * 30 + " " * 6 + "-" * 40)
+            for title in titles:
+
+                # If no job or character, don't show in output
+                if title["characters"] or title["job"]:
+                    if not title["job"]:
+                        title["job"] = ""
+                    if not title["characters"]:
+                        title["characters"] = []
+                    print("{:^40}      {:^10}      {:^30}      {:^40}".format(title["primaryTitle"][0]["primaryTitle"], title["tconst"],
+                    title["job"], ', '.join(title["characters"])))
+
+            print("\n")
+            print(divider)
+
+
+
 # Add a movie
 def task_4(db, title_basics):
     os.system(clr)
@@ -227,7 +259,7 @@ def main():
             task_2(db, title_basics, title_ratings)
             input("\n*Enter key to go back*")
         elif task == 3:
-            task_3(db, name_basics)
+            task_3(db, name_basics, title_basics, title_principals)
             input("\n*Enter key to go back*")
         elif task == 4:
             task_4(db, title_basics)
