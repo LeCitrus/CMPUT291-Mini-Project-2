@@ -1,4 +1,3 @@
-
 from pymongo import MongoClient
 import json
 client = MongoClient('localhost', 27017)
@@ -7,7 +6,7 @@ def tsv2json(input_file,output_file):
 
     
     arr = [] 
-    file = open(input_file, 'r')
+    file = open(input_file, 'r') 
     a = file.readline()
       
     # The first line consist of headings of the record 
@@ -44,20 +43,22 @@ def tsv2json(input_file,output_file):
        
   
 # Driver Code
+location = input('Please enter the directory of the tsv and json files: ')
 
-files_in = ['/Users/clarechen/Downloads/prjcode 3/name.basics.tsv', 
-'/Users/clarechen/Downloads/prjcode 3/title.basics.tsv',
-'/Users/clarechen/Downloads/prjcode 3/title.principals.tsv',
-'/Users/clarechen/Downloads/prjcode 3/title.ratings.tsv']
+files_in = [location + '/name.basics.tsv', 
+location+'/title.basics.tsv',
+location+'/title.principals.tsv',
+location+'/title.ratings.tsv']
 
-files_out = ['/Users/clarechen/Downloads/prjcode 3/name.basics.json', 
-'/Users/clarechen/Downloads/prjcode 3/title.basics.json',
-'/Users/clarechen/Downloads/prjcode 3/title.principals.json',
-'/Users/clarechen/Downloads/prjcode 3/title.ratings.json']
+files_out = [location+'/name.basics.json', 
+location+'/title.basics.json',
+location+'/title.principals.json',
+location+'/title.ratings.json']
 
 for i in range(0,4):
     input_filename = files_in[i]
     output_filename = files_out[i]
     tsv2json(input_filename,output_filename)
+
 
 
