@@ -1,7 +1,5 @@
 
-from pymongo import MongoClient
 import json
-client = MongoClient('localhost', 27017)
 
 def tsv2json(input_file,output_file):
 
