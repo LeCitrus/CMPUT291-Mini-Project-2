@@ -3,7 +3,7 @@ Curtis Kan - ctkan
 Clare Chen - clare2
 Seth Rinehart - rinehart
 
-We collaborated with Joshua Ji.
+We collaborated with Joshua Ji and Vedant Vyas.
 
 https://www.geeksforgeeks.org/python-tsv-conversion-to-json/
 https://pymongo.readthedocs.io/en/stable/tutorial.html
