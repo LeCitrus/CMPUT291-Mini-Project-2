@@ -9,6 +9,9 @@ if os.name == 'nt':
 else:
     clr = 'clear'
 
+# Aesthetics
+divider = '-' * 40
+
 
 # Get port number
 def get_port():
@@ -23,7 +26,7 @@ def get_port():
 # Main menu prompt
 def print_main_menu():
     os.system(clr)
-    print("List of tasks\n------------------------------")
+    print("List of tasks\n" + divider)
     print("1. Search for titles\n2. Search for genres\n3. Search for cast/crew members\n4. Add a movie\n5. Add a "
           "cast/crew member\n6. Exit\n")
 
@@ -49,9 +52,10 @@ def task_1(db):
 
 
 # Search for genres
-def task_2(db, title_ratings):
+def task_2(db, title_basics, title_ratings):
     os.system(clr)
     genre = input("Enter genre: ").strip()
+
     while True:
         try:
             count = int(input("Enter minimum vote count: ").strip())
@@ -59,21 +63,38 @@ def task_2(db, title_ratings):
         except ValueError:
             print("Please enter an integer.")
 
+    db.title_basics.find({"tconst": {"$regex": genre, "$options": "i"}}, {"_id": 0})
 
 # Search for cast/crew members
-def task_3(db):
+def task_3(db, name_basics):
     os.system(clr)
     name = input("Enter cast/crew member name: ").strip()
+    
+    # Get list of persons with matching name
+    persons = list(db.name_basics.find({"primaryName": {"$regex": name, "$options": "i"}}, {"_id": 0, "primaryProfession": 1, "nconst": 1}))
 
+    if not persons:
+        print("No names found!")
 
+    else:
+
+        # Print professions of each member
+        print(divider + "\n")
+        for person in persons:
+            print("{:^14}    {:^40}".format("Cast ID", "Professions"))
+            print("-" * 14 + " " * 4 + "-" * 40)
+            print("{:^14}    {:^40}".format(person["nconst"], ', '.join(person["primaryProfession"])))
+            print("\n")  
+        print(divider)
 # Add a movie
 def task_4(db, title_basics):
     os.system(clr)
+
     while True:
         mid = input("Enter unique MID: ").strip()
 
-        # Make sure unique MID
-        if not db.title_basics.find_one({"tconst": mid}):
+        # Make sure unique MID (case insensitive)
+        if not db.title_basics.find_one({"tconst": {"$regex": mid, "$options": "i"}}):
             break
 
         print("Movie ID already exists!")
@@ -111,27 +132,31 @@ def task_4(db, title_basics):
     })
 
     # Confirm movie has been added
-    print("\n----------------------------\nAdded to title_basics: ")
+    print("\n" + divider + "\nAdded to title_basics: ")
     pprint(db.title_basics.find_one({"tconst": mid}, {"_id": 0}), sort_dicts=False)
-    print("----------------------------")
+    print(divider)
                             
 
 # Add a cast/crew member
 def task_5(db, name_basics, title_basics, title_principals):
     os.system(clr)
 
-    # Make sure cast ID exists
+    # Make sure cast ID exists (case insensitive)
     while True:
         cid = input("Enter CID: ").strip()
-        if db.name_basics.find_one({"nconst": cid}):
+
+        if db.name_basics.find_one({"nconst": {"$regex": cid, "$options": "i"}}):
             break
+
         print("Cast ID does not exist!")
     
-    # Make sure title ID exists
+    # Make sure title ID exists (case insensitive)
     while True:
         mid = input("Enter MID: ").strip()
-        if db.title_basics.find_one({"tconst": mid}):
+
+        if db.title_basics.find_one({"tconst": {"$regex": mid, "$options": "i"}}):
             break
+
         print("Movie ID does not exist!")
     
     category = input("Enter category: ").strip()
@@ -159,14 +184,14 @@ def task_5(db, name_basics, title_basics, title_principals):
     })
 
     # Confirm cast/crew member added
-    print("\n----------------------------\nAdded to title_principals: ")
+    print("\n" + divider + "\nAdded to title_principals: ")
     pprint(db.title_principals.find_one({"$and": [
             {"tconst": mid},
             {"ordering": ordering}
         ]},
         {"_id": 0}), sort_dicts=False
     )
-    print("----------------------------")
+    print(divider)
 
 
 # Main program
@@ -199,10 +224,10 @@ def main():
             task_1(db)
             input("\n*Enter key to go back*")
         elif task == 2:
-            task_2(db, title_ratings)
+            task_2(db, title_basics, title_ratings)
             input("\n*Enter key to go back*")
         elif task == 3:
-            task_3(db)
+            task_3(db, name_basics)
             input("\n*Enter key to go back*")
         elif task == 4:
             task_4(db, title_basics)
