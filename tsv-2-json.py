@@ -4,7 +4,9 @@ import json
 client = MongoClient('localhost', 27017)
 
 def tsv2json(input_file,output_file):
-    arr = []
+
+    
+    arr = [] 
     file = open(input_file, 'r')
     a = file.readline()
       
@@ -16,13 +18,25 @@ def tsv2json(input_file,output_file):
         d = {}
         for t, f in zip(titles, line.split('\t')):
             
-              # Convert each row into dictionary with keys as titles
+            # Convert each row into dictionary with keys as titles
             d[t] = f.strip()
-              
-        # we will use strip to remove '\n'.
-        arr.append(d)
-   
+
+            # Nested Arrays
+            if t == "primaryProfession":
+                d[t] = f.strip().split(',')
+             
+            if t == "knownForTitles":
+                    d[t] = f.strip().split(',')
+             
+            if t == "genres":
+                    d[t] = f.strip().split(',')
           
+            if t == "characters":
+                    d[t] = f.strip().split(',')
+                   
+        # we will use strip to remove '\n'.n
+        arr.append(d)
+     
         # we will append all the individual dictionaires into list 
         # and dump into file.
     with open(output_file, 'w', encoding='utf-8') as output_file:
@@ -45,4 +59,5 @@ for i in range(0,4):
     input_filename = files_in[i]
     output_filename = files_out[i]
     tsv2json(input_filename,output_filename)
+
 
