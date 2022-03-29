@@ -1,7 +1,8 @@
-# Convert .tsv files from current directory .json.
-# Nested array columns primaryProfession, knownForTitles, genres, characters
+
+from pymongo import MongoClient
 import json
-  
+client = MongoClient('localhost', 27017)
+
 def tsv2json(input_file,output_file):
     arr = []
     file = open(input_file, 'r')
@@ -20,13 +21,28 @@ def tsv2json(input_file,output_file):
               
         # we will use strip to remove '\n'.
         arr.append(d)
+   
           
         # we will append all the individual dictionaires into list 
         # and dump into file.
     with open(output_file, 'w', encoding='utf-8') as output_file:
         output_file.write(json.dumps(arr, indent=4))
+       
   
 # Driver Code
-input_filename = 'flower.tsv'
-output_filename = 'flower.json'
-tsv2json(input_filename,output_filename)
+
+files_in = ['/Users/clarechen/Downloads/prjcode 3/name.basics.tsv', 
+'/Users/clarechen/Downloads/prjcode 3/title.basics.tsv',
+'/Users/clarechen/Downloads/prjcode 3/title.principals.tsv',
+'/Users/clarechen/Downloads/prjcode 3/title.ratings.tsv']
+
+files_out = ['/Users/clarechen/Downloads/prjcode 3/name.basics.json', 
+'/Users/clarechen/Downloads/prjcode 3/title.basics.json',
+'/Users/clarechen/Downloads/prjcode 3/title.principals.json',
+'/Users/clarechen/Downloads/prjcode 3/title.ratings.json']
+
+for i in range(0,4):
+    input_filename = files_in[i]
+    output_filename = files_out[i]
+    tsv2json(input_filename,output_filename)
+
