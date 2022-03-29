@@ -1,7 +1,9 @@
 a) tsv-2-json.py converts the four tsv files into json files with the same names with .json. The function will eventually return the output file 
 with the exact same contents, but with "primaryProfession", "knownForTitles", "genres" and "characters" keys having its elements in a nested array. 
 The output file with return in the correct directory and be ready to load.
+
 load-json.py
+
 main.py has the simple query interface and all of phase 2 functionality. It gets a valid port number before going to the main menu.
 The main menu has 6 options: the 5 tasks and exit program. For each task, the user follows the input prompts, then after the output is
 printed the user presses enter to clear the screen and go back to the main menu. The main menu loops until the exit program option is selected.
@@ -9,7 +11,9 @@ printed the user presses enter to clear the screen and go back to the main menu.
 b) tsv-2-json.py takes the four files in the correct directory and loops with input file into the tsv2json function. This function creates
 an array and strips each line in the file to create a dictionary of keys and values. For specific keys such as "primaryProfession" we used
 .split(',') to turn them into nested arrays. As well, we used .strip() to get rid of \n at the end of element lists.
+
 load-json.py
+
 main.py: the main function begins by connecting to a valid mongoDB port, opening the correct database, and the 4 collections.
 It then enters the main_menu while loop. Main menu prompt clears screen and lists the 6 options, prompting for input. 6 will break
 the loop and end the program. 5 calls task_5(db, name_basics, title_basics, title_principals), which gets 
@@ -19,6 +23,8 @@ and put in the correct directory/location. As well, we tested if the changes to 
 we tested to make sure there were no "/n" elements at the end of lists. As well, we timed how long the program would take (11 seconds~).
 While phase 1 was still being created, Curtis tested phase 2 functionality by creating a small dataset manually with enough
 rows to provide informative output for tasks 3, 4, and 5. 
+load-json.py
+
 
 d) Our group decided to split the project into 3 initial parts for the 3 members: each person worked on the 3 python files
 in phase 1 and phase 2. We maintained that whoever finished their part first would help with the other parts, particularly phase 2
