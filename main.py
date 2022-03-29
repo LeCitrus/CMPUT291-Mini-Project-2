@@ -129,8 +129,8 @@ def task_4(db, title_basics):
     while True:
         mid = input("Enter unique MID: ").strip()
 
-        # Make sure unique MID (case insensitive)
-        if not db.title_basics.find_one({"tconst": {"$regex": mid, "$options": "i"}}):
+        # Make sure unique MID
+        if not db.title_basics.find_one({"tconst": mid}):
             break
 
         print("Movie ID already exists!")
@@ -177,20 +177,20 @@ def task_4(db, title_basics):
 def task_5(db, name_basics, title_basics, title_principals):
     os.system(clr)
 
-    # Make sure cast ID exists (case insensitive)
+    # Make sure cast ID exists
     while True:
         cid = input("Enter CID: ").strip()
 
-        if db.name_basics.find_one({"nconst": {"$regex": cid, "$options": "i"}}):
+        if db.name_basics.find_one({"nconst": cid}):
             break
 
         print("Cast ID does not exist!")
     
-    # Make sure title ID exists (case insensitive)
+    # Make sure title ID exists
     while True:
         mid = input("Enter MID: ").strip()
 
-        if db.title_basics.find_one({"tconst": {"$regex": mid, "$options": "i"}}):
+        if db.title_basics.find_one({"tconst": mid}):
             break
 
         print("Movie ID does not exist!")
