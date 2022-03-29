@@ -102,8 +102,8 @@ def task_3(db, name_basics, title_basics, title_principals):
 
             # Print movies of the member
             print("Movies\n")
-            print("{:^40}      {:^10}      {:^30}      {:^40}".format("Title", "ID", "Job", "Characters"))
-            print("-" * 40 + " " * 6 + "-" * 10 + " " * 6 + "-" * 30 + " " * 6 + "-" * 40)
+            print("{:^40}      {:^14}      {:^30}      {:^40}".format("Title", "ID", "Job", "Characters"))
+            print("-" * 40 + " " * 6 + "-" * 14 + " " * 6 + "-" * 30 + " " * 6 + "-" * 40)
             for title in titles:
 
                 # If no job or character, don't show in output
@@ -115,7 +115,7 @@ def task_3(db, name_basics, title_basics, title_principals):
                     if not title["characters"]:
                         title["characters"] = []
 
-                    print("{:^40}      {:^10}      {:^30}      {:^40}".format(title["primaryTitle"][0]["primaryTitle"], title["tconst"],
+                    print("{:^40}      {:^14}      {:^30}      {:^40}".format(title["primaryTitle"][0]["primaryTitle"], title["tconst"],
                     title["job"], ', '.join(title["characters"])))
 
             print("\n")
