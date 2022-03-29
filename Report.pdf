@@ -1,13 +1,27 @@
 a) tsv-2-json.py 
 load-json.py
 main.py has the simple query interface and all of phase 2 functionality. It gets a valid port number before going to the main menu.
-The main menu has 6 options: the 5 tasks and exit program. For each task, after the output is printed the user presses enter to clear the screen and 
-go back to the main menu. The main menu loops until the exit program option is selected.
+The main menu has 6 options: the 5 tasks and exit program. For each task, the user follows the input prompts, then after the output is
+printed the user presses enter to clear the screen and go back to the main menu. The main menu loops until the exit program option is selected.
 
-b) 
+b) tsv-2-json.py 
+load-json.py
+main.py: the main function begins by connecting to a valid mongoDB port, opening the correct database, and the 4 collections.
+It then enters the main_menu while loop. Main menu prompt clears screen and lists the 6 options, prompting for input. 6 will break
+the loop and end the program. 5 calls task_5(db, name_basics, title_basics, title_principals), which gets 
 
-c)
+c) While phase 1 was still being created, Curtis tested phase 2 functionality by creating a small dataset manually with enough
+rows to provide informative output for tasks 3, 4, and 5. 
 
-d) Curtis worked on Phase 2 functionality, including the 5 tasks and the simple query interface
+d) Our group decided to split the project into 3 initial parts for the 3 members: each person worked on the 3 python files
+in phase 1 and phase 2. We maintained that whoever finished their part first would help with the other parts, particularly phase 2
+as that was the longest portion. 
+Curtis worked on Phase 2 functionality, including the 5 tasks and the simple query interface. It took 
 Clare worked on tsv-2-json.py
 Seth worked on load-json.py
+
+Finally, the whole group spent 5 hours on the last day to combine, debug, and refine the project files, including the read me and
+report.pdf.
+We kept the project on track by assigning the roles 2 weeks ahead of the deadline, giving frequent updates on gmail chats on progress
+and problems. In the week that the project was due, we spent 10 hours on google meets to work on the project together so everyone
+was on the same page.

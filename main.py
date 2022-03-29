@@ -45,7 +45,7 @@ def get_task():
 
 
 # Search for titles
-def task_1(db):
+def task_1(db, name_basics, title_basics, title_ratings):
     os.system(clr)
     keywords = list(input("Enter 1 or more keywords, separated by spaces (eg. cmput MaTh DAVOOD): ").split())
     print('pog')
@@ -255,7 +255,7 @@ def main():
         if task == 6:
             quit("Goodbye!")
         elif task == 1:
-            task_1(db)
+            task_1(db, name_basics, title_basics, title_ratings)
             input("\n*Enter key to go back*")
         elif task == 2:
             task_2(db, title_basics, title_ratings)

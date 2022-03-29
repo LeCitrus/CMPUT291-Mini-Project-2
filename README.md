@@ -1,4 +1,4 @@
-# CMPUT291 Mini Project1
+# CMPUT291 Mini Project2
 Curtis Kan - ctkan
 Clare Chen - clare2
 Seth Rinehart - rinehart
