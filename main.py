@@ -10,7 +10,7 @@ else:
     clr = 'clear'
 
 # Aesthetics
-divider = '-' * 40
+divider = '_' * 40
 
 
 # Get port number
@@ -81,7 +81,7 @@ def task_3(db, name_basics, title_basics, title_principals):
         # Print professions and movies of each member
         print(divider)
         for person in persons:
-            print("\nProfessions\n")
+            print("\nProfession Info\n")
             print("{:^14}    {:^50}".format("Cast ID", "Professions"))
             print("-" * 14 + " " * 4 + "-" * 50)
             print("{:^14}    {:^50}".format(person["nconst"], ', '.join(person["primaryProfession"])))
@@ -106,16 +106,18 @@ def task_3(db, name_basics, title_basics, title_principals):
 
                 # If no job or character, don't show in output
                 if title["characters"] or title["job"]:
+                    # For string formatting, change None values into empty strings
                     if not title["job"]:
                         title["job"] = ""
+
                     if not title["characters"]:
                         title["characters"] = []
+
                     print("{:^40}      {:^10}      {:^30}      {:^40}".format(title["primaryTitle"][0]["primaryTitle"], title["tconst"],
                     title["job"], ', '.join(title["characters"])))
 
             print("\n")
             print(divider)
-
 
 
 # Add a movie
