@@ -372,7 +372,7 @@ def task_5(db, name_basics, title_basics, title_principals):
     if ordering:
         ordering = str((ordering[0]["max"]) + 1)
     else:
-        ordering = 1
+        ordering = '1'
 
     # Insert the cast/crew member
     db.title_principals.insert_one({"tconst": mid,
