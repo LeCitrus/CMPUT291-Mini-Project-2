@@ -363,7 +363,8 @@ def task_5(db, name_basics, title_basics, title_principals):
     # Find largest ordering listed
     ordering = list(db.title_principals.aggregate([
         {"$match": {"tconst": mid}},
-        {"$group": {"_id": "$tconst", "max": {"$max": {"$toInt": {"$ordering"}}}}},
+        {"$group": {"_id": "$tconst", 
+                    "max": {"$max": {"$toInt": "$ordering"}}}},
         {"$project": {"_id": 0}}
     ]))
 
