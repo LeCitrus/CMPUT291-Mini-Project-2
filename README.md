@@ -13,3 +13,5 @@ https://stackoverflow.com/questions/5681851/mongodb-combine-data-from-multiple-c
 https://pythonexamples.org/python-split-string-by-comma/
 https://stackoverflow.com/questions/5137497/find-the-current-directory-and-files-directory
 https://stackoverflow.com/questions/16252208/how-to-use-regex-in-mongodb-aggregation-query-within-match
+https://www.geeksforgeeks.org/how-to-import-json-file-in-mongodb-using-python/
+https://www.etutorialspoint.com/index.php/296-how-to-insert-json-data-into-mongodb-using-python
