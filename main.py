@@ -51,43 +51,85 @@ def task_1(db, name_basics, title_basics, title_ratings):
 
     # Get list of keywords
     keywords = list(input("Enter 1 or more keywords, separated by spaces (eg. cmput MaTh DAVOOD): ").split())
+    # Adds all ints to year checker just incase someone decides a title has numbers and year
+    keywords_ints=[]
+    keywords_reg=""
+    keyints_reg=""
+    if len(keywords) > 0:
+        for x in range(0, len(keywords)):
 
-    # Print movie matches table
-    print("\nMovie matches")
-    print("\n    {:^14}      {:^10}      {:^40}      {:^40}      {:^8}      {:^14}      {:^14}      {:^20}      {:^14}".format("tconst", 
-    "titleType", "primaryTitle", "originalTitle", "isAdult", "startYear", "endYear", "runtimeMinutes", "genres"))
-    print("    " + "-" * 14 + " " * 6 + "-" * 10 + " " * 6 + "-" * 40 + " " * 6 + "-" * 40 + " " * 6 + "-" * 8 + " " * 6 + "-" * 14 +
-    " " * 6 + "-" * 14 + " " * 6 + "-" * 20 + " " * 6 + "-" * 14)
-    for i in range(1, len(keywords) + 1):
-        print("{:<3} {:^14}      {:^10}      {:^40}      {:^40}      {:^8}      {:^14}      {:^14}      {:^20}      {:^14}".format(i, 
-        "tconst", "titleType", "primaryTitle", "originalTitle", "isAdult", "startYear", "endYear", "runtimeMinutes", "genres"))
+            # Adds the white spaces so that it only pulls up one word eg: unwanted != wanted adds the white space to avoid this
 
-    movies = len(keywords)
-    print("\n" + divider + "\n")
+            if isinstance(keywords[x],int):
+                keywords_ints.append("( %s )"%(keywords[x]))
+            else:
+                keywords[x] = "( %s )"%(keywords[x])
 
-    # Prompt for title select
-    while True:
-        try:
-            select = int(input("Select a movie: "))
-            if 1 <= select <= movies:
-                break
-            print("Invalid option!")
-        except ValueError:
-            print("Please enter an integer.")
+        # If there are items in the list then we do some regex magic and make it so any keyword will return a search results
 
-    # Print rating and number votes
-    rating = 0
-    votes = 0
-    print("\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
+        keywords_reg = '&'.join(keywords)
+        keyints_reg  = '&'.join(keywords_ints)
 
-    # Print cast members and characters
-    persons = [1, 2, 3]
-    print("\n{:^16}      {:^40}      {:^40}      {:^50} ".format("nconst", "Name", "Job", "Characters"))
-    print("-" * 16 + " " * 6 + "-" * 40 + " " * 6 + "-" * 40 + " " * 6 + "-" * 50)
-    for person in persons:
-        print("{:^16}      {:^40}      {:^40}      {:^50} ".format("nconst", "Name", "Job", "Characters"))
+        keywords_reg = "(?i)" + keywords_reg
+        keyints_reg = "(?i)" + keyints_reg
 
-    # Print list of cast/crew members, and associated characters
+    # pipeline match the for both start year and primaryTitle
+
+    agg_pipe = [
+            {"$match" : {"primaryTitle" : {"$regex" : keywords_reg }}},
+            {"$match" : {"startYear" : {"$regex" : keyints_reg}}},
+            {"$sort" : {"tconst" : 1}}
+            ]
+
+    movie_matches = list(title_basics.aggregate(agg_pipe))
+
+    # If there are movies in search
+    if len(movie_matches):
+
+        # Print movie matches table
+        print("\nMovie matches")
+        print("\n    {:^14}    {:^10}    {:^40}    {:^40}    {:^8}    {:^10}    {:^10}    {:^16}    {:^46}".format("tconst", 
+        "titleType", "primaryTitle", "originalTitle", "isAdult", "startYear", "endYear", "runtimeMinutes", "genres"))
+        print("    " + "-" * 14 + " " * 4 + "-" * 10 + " " * 4 + "-" * 40 + " " * 4 + "-" * 40 + " " * 4 + "-" * 8 + " " * 4 + "-" * 10 +
+        " " * 4 + "-" * 10 + " " * 4 + "-" * 16 + " " * 4 + "-" * 46)
+        
+        i = 1
+        for movie in movie_matches:
+            print("{:<3} {:^14}    {:^10}    {:^40}    {:^40}    {:^8}    {:^10}    {:^10}    {:^16}    {:^46}".format(i, 
+            str(movie["tconst"] or ''), str(movie["titleType"] or ''), str(movie["primaryTitle"] or ''), str(movie["originalTitle"] or ''), 
+            str(movie["isAdult"] or '') , str(movie["startYear"] or ''), str(movie["endYear"] or ''), str(movie["runtimeMinutes"] or ''), 
+            ', '.join(movie["genres"])))
+            i += 1
+
+        print("\n" + divider + "\n")
+
+        # Prompt for title select
+        while True:
+            try:
+                select = int(input("Select a movie: "))
+                if 1 <= select <= len(movie_matches):
+                    break
+                print("Invalid option!")
+            except ValueError:
+                print("Please enter an integer.")
+
+        # Find rating and number votes from title_ratings
+        stats = db.title_ratings.find_one({"tconst": movie_matches[select - 1]["tconst"]}, {"_id": 0, "tconst": 0})
+
+        # Print rating and number votes
+        rating = stats["averageRating"]
+        votes = stats["numVotes"]
+        print("\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
+
+        # Print list of cast/crew members, and associated characters
+        persons = [1, 2, 3]
+        print("\n{:^16}      {:^40}      {:^40}      {:^70} ".format("nconst", "Name", "Job", "Characters"))
+        print("-" * 16 + " " * 6 + "-" * 40 + " " * 6 + "-" * 40 + " " * 6 + "-" * 70)
+        for person in persons:
+            print("{:^16}      {:^40}      {:^40}      {:^70} ".format("nconst", "Name", "Job", "Characters"))
+    else:
+        print("\nNo matches!")
+
 
 # Search for genres
 def task_2(db, title_basics, title_ratings):
@@ -139,13 +181,13 @@ def task_2(db, title_basics, title_ratings):
             for x in range(50):
                 i += 1
                 if i < len(titles):
-                    print("{:^20}      {:60}      {:^10}      {:^14}".format(titles[i]["tconst"], titles[i]["primaryTitle"], 
-                    titles[i]["ratings"], titles[i]["numVotes"]))
+                    print("{:^20}      {:60}      {:^10}      {:^14}".format(titles[i]["tconst"], str(titles[i]["primaryTitle"] or ''), 
+                    str(titles[i]["ratings"] or ''), str(titles[i]["numVotes"] or '')))
                 else:
                     end = True
                     break
             if not end:
-                input("\n*ENTER to show next 50 results...\n")
+                input("\n*ENTER to show next 50 results...*\n")
             
     else:
         print("\nNo movies fit these constraints!")
@@ -168,7 +210,7 @@ def task_3(db, name_basics, title_basics, title_principals):
         print(divider)
         for person in persons:
             print("\nProfession Info\n")
-            print("{:^14}    {:^50}".format("Cast ID", "Professions"))
+            print("{:^14}    {:^50}".format("nconst", "Professions"))
             print("-" * 14 + " " * 4 + "-" * 50)
             print("{:^14}    {:^50}".format(person["nconst"], ', '.join(person["primaryProfession"])))
             print("\n")  
@@ -183,24 +225,20 @@ def task_3(db, name_basics, title_basics, title_principals):
                     "as": "primaryTitle"}
                     }
             ])))
+            if titles:
+                # Print movies of the member if any
+                print("Movies\n")
+                print("{:<70}      {:^14}      {:^30}      {:^40}".format("Primary Title", "tconst", "Job", "Characters"))
+                print("-" * 70 + " " * 6 + "-" * 14 + " " * 6 + "-" * 30 + " " * 6 + "-" * 40)
+                for title in titles:
 
-            # Print movies of the member
-            print("Movies\n")
-            print("{:^40}      {:^14}      {:^30}      {:^40}".format("Primary Title", "ID", "Job", "Characters"))
-            print("-" * 40 + " " * 6 + "-" * 14 + " " * 6 + "-" * 30 + " " * 6 + "-" * 40)
-            for title in titles:
+                    # If no job or character, don't show in output
+                    if title["characters"] or title["job"]:
 
-                # If no job or character, don't show in output
-                if title["characters"] or title["job"]:
-                    # For string formatting, change None values into empty strings
-                    if not title["job"]:
-                        title["job"] = ""
-
-                    if not title["characters"]:
-                        title["characters"] = []
-
-                    print("{:^40}      {:^14}      {:^30}      {:^40}".format(title["primaryTitle"][0]["primaryTitle"], title["tconst"],
-                    title["job"], ', '.join(title["characters"])))
+                        print("{:<70}      {:^14}      {:^30}      {:^40}".format(str(title["primaryTitle"][0]["primaryTitle"] or ''), 
+                        str(title["tconst"] or ''), str(title["job"] or ''), str(', '.join(title["characters"]) or [])))
+            else: 
+                print("\nNot in any movies!")
 
             print("\n")
             print(divider)
@@ -211,13 +249,13 @@ def task_4(db, title_basics):
     os.system(clr)
 
     while True:
-        mid = input("Enter unique MID: ").strip()
+        mid = input("Enter unique tconst: ").strip()
 
         # Make sure unique MID
         if not db.title_basics.find_one({"tconst": mid}):
             break
 
-        print("Movie ID already exists!")
+        print(mid ,"already exists!")
 
     title = input("Enter title: ").strip()
 
@@ -263,21 +301,21 @@ def task_5(db, name_basics, title_basics, title_principals):
 
     # Make sure cast ID exists
     while True:
-        cid = input("Enter CID: ").strip()
+        cid = input("Enter nconst: ").strip()
 
         if db.name_basics.find_one({"nconst": cid}):
             break
 
-        print("Cast ID does not exist!")
+        print(cid, "does not exist!")
     
     # Make sure title ID exists
     while True:
-        mid = input("Enter MID: ").strip()
+        mid = input("Enter tconst: ").strip()
 
         if db.title_basics.find_one({"tconst": mid}):
             break
 
-        print("Movie ID does not exist!")
+        print(mid, "does not exist!")
     
     category = input("Enter category: ").strip()
 
