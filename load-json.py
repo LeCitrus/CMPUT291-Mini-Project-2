@@ -37,6 +37,7 @@ def main(myclient):
     clear_collections(name_basics, title_basics, title_principals, title_ratings)
 
     # Loading / Opening the json file
+    print("Loading name.basics.json...")
     with open(dir_path+'/name.basics.json') as file:
         file_data = json.load(file)
     try:
@@ -48,6 +49,7 @@ def main(myclient):
             print("file opened")
     file.close()
 
+    print("Loading title.basics.json")
     with open(dir_path+'/title.basics.json') as file:
         file_data = json.load(file)
     try:
@@ -59,6 +61,7 @@ def main(myclient):
             print("file opened")
     file.close()
 
+    print("Loading title.principals.json...")
     with open(dir_path+'/title.principals.json') as file:
         file_data = json.load(file)
     try:
@@ -70,6 +73,7 @@ def main(myclient):
             print("file opened")
     file.close()
 
+    print("Loading title.ratings.json...")
     with open(dir_path+'/title.ratings.json') as file:
         file_data = json.load(file)
     try:
