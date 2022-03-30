@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
 from pprint import pprint
 import os
+import re
 
 # For clearing terminal
 if os.name == 'nt':
@@ -70,10 +71,10 @@ def task_2(db, title_basics, title_ratings):
 # Search for cast/crew members
 def task_3(db, name_basics, title_basics, title_principals):
     os.system(clr)
-    name = input("Enter cast/crew member name: ").strip()
+    name = "^" + input("Enter cast/crew member name: ").strip() + "$"
     
     # Get list of persons with matching name
-    persons = list(db.name_basics.find({"primaryName": {"$regex": name, "$options": "i"}}, {"_id": 0, "primaryProfession": 1, "nconst": 1}))
+    persons = list(db.name_basics.find({"primaryName": re.compile(name, re.IGNORECASE)}, {"_id": 0, "primaryProfession": 1, "nconst": 1}))
 
     if not persons:
         print("No names found!")
@@ -102,7 +103,7 @@ def task_3(db, name_basics, title_basics, title_principals):
 
             # Print movies of the member
             print("Movies\n")
-            print("{:^40}      {:^14}      {:^30}      {:^40}".format("Title", "ID", "Job", "Characters"))
+            print("{:^40}      {:^14}      {:^30}      {:^40}".format("Primary Title", "ID", "Job", "Characters"))
             print("-" * 40 + " " * 6 + "-" * 14 + " " * 6 + "-" * 30 + " " * 6 + "-" * 40)
             for title in titles:
 
