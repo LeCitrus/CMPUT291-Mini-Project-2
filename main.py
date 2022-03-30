@@ -149,7 +149,7 @@ def task_1(db, name_basics, title_basics, title_ratings):
             # Print rating and number votes
             rating = stats["averageRating"]
             votes = stats["numVotes"]
-            print("\n" + movie_matches[select - 1]["primaryTitle"] + "\n-----------------\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
+            print("\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
 
             # Find cast/crew members from title_principals and name_basics
             members = list(db.title_principals.aggregate([
@@ -363,13 +363,13 @@ def task_5(db, name_basics, title_basics, title_principals):
     # Find largest ordering listed
     ordering = list(db.title_principals.aggregate([
         {"$match": {"tconst": mid}},
-        {"$group": {"_id": "$tconst", "max": {"$max": "$ordering"}}},
+        {"$group": {"_id": "$tconst", "max": {"$max": {"$toInt": {"$ordering"}}}}},
         {"$project": {"_id": 0}}
     ]))
 
     # Set the new insert's ordering to 1, or largest ordering + 1
     if ordering:
-        ordering = int(ordering[0]["max"]) + 1
+        ordering = str((ordering[0]["max"]) + 1)
     else:
         ordering = 1
 
@@ -438,4 +438,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
