@@ -123,7 +123,7 @@ def task_1(db, name_basics, title_basics, title_ratings):
                         print("{:<3} {:^14}    {:^10}    {:<40}    {:<40}    {:^8}    {:^10}    {:^10}    {:^16}    {:<46}".format(i + 1, 
                         str(movie_matches[i]["tconst"][:14] or ''), str(movie_matches[i]["titleType"][:10] or ''), str(movie_matches[i]["primaryTitle"][:40] or ''), 
                         str(movie_matches[i]["originalTitle"][:40] or ''), str(movie_matches[i]["isAdult"[:8]] or '') , str(movie_matches[i]["startYear"] or ''), 
-                        str(movie_matches[i]["endYear"] or ''), str(movie_matches[i]["runtimeMinutes"] or ''), ''.join(movie_matches[i]["genres"])))
+                        str(movie_matches[i]["endYear"] or ''), str(movie_matches[i]["runtimeMinutes"] or ''), ', '.join(movie_matches[i]["genres"])))
                         i += 1
                     else:
                         end = True
@@ -168,7 +168,7 @@ def task_1(db, name_basics, title_basics, title_ratings):
             for member in members:
                 if not member["characters"]:
                     member["characters"] = []
-                print("{:^16}      {:^40}      {:^70} ".format(member["nconst"], member["name"][0]["primaryName"], ''.join(member["characters"])[2:-2]))
+                print("{:^16}      {:^40}      {:^70} ".format(member["nconst"], member["name"][0]["primaryName"], ', '.join(member["characters"])))
         else:
             print("\nNo matches!")
     else: 
