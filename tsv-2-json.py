@@ -1,3 +1,4 @@
+
 import json
 import os
 
@@ -16,29 +17,25 @@ def tsv2json(input_file, output_file):
         for key, value in zip(titles, line.split('\t')):
 
             # Convert each row into dictionary with keys as titles
+            row[key] = value.strip()
+
             # Nested Arrays
             if key in ("primaryProfession", "knownForTitles", "genres", "characters"):
                 row[key] = value.strip().split(',')
-            
-            # NULL values
-            elif value == r"\N":
-                row[key] = None
-                
-            # Regular value
-            else:
-                 row[key] = value.strip()
 
         # We will use strip to remove '\n'.n
+        
         arr.append(row)
 
     # We will append all the individual dictionaries into list and dump into file
     with open(output_file, 'w', encoding='utf-8') as output_file:
-        output_file.write(json.dumps(arr, indent=4))
-
+        for i in arr:
+            output_file.write(json.dumps(i))
+            output_file.write("\n")
+        
 
 # Driver Code
 def main():
-
     # Get current directory
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
