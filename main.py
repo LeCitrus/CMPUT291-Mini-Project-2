@@ -61,9 +61,9 @@ def task_1(db, name_basics, title_basics, title_ratings):
             # Adds the white spaces so that it only pulls up one word eg: unwanted != wanted adds the white space to avoid this
 
             if isinstance(keywords[x],int):
-                keywords_ints.append("( %s )"%(keywords[x]))
+                keywords_ints.append("(%s)"%(keywords[x]))
             else:
-                keywords[x] = "( %s )"%(keywords[x])
+                keywords[x] = "(%s)"%(keywords[x])
 
         # If there are items in the list then we do some regex magic and make it so any keyword will return a search results
 
@@ -93,13 +93,22 @@ def task_1(db, name_basics, title_basics, title_ratings):
         print("    " + "-" * 14 + " " * 4 + "-" * 10 + " " * 4 + "-" * 40 + " " * 4 + "-" * 40 + " " * 4 + "-" * 8 + " " * 4 + "-" * 10 +
         " " * 4 + "-" * 10 + " " * 4 + "-" * 16 + " " * 4 + "-" * 46)
         
+        # Paginate movie results
         i = 1
-        for movie in movie_matches:
-            print("{:<3} {:^14}    {:^10}    {:^40}    {:^40}    {:^8}    {:^10}    {:^10}    {:^16}    {:^46}".format(i, 
-            str(movie["tconst"] or ''), str(movie["titleType"] or ''), str(movie["primaryTitle"] or ''), str(movie["originalTitle"] or ''), 
-            str(movie["isAdult"] or '') , str(movie["startYear"] or ''), str(movie["endYear"] or ''), str(movie["runtimeMinutes"] or ''), 
-            ', '.join(movie["genres"])))
-            i += 1
+        end = False
+        while not end:
+            for x in range(50):
+                if i < len(movie_matches):
+                    print("{:<3} {:^14}    {:^10}    {:<40}    {:<40}    {:^8}    {:^10}    {:^10}    {:^16}    {:<46}".format(i, 
+                    str(movie_matches[i]["tconst"][:14] or ''), str(movie_matches[i]["titleType"][:10] or ''), str(movie_matches[i]["primaryTitle"][:40] or ''), 
+                    str(movie_matches[i]["originalTitle"][:40] or ''), str(movie_matches[i]["isAdult"[:8]] or '') , str(movie_matches[i]["startYear"] or ''), 
+                    str(movie_matches[i]["endYear"] or ''), str(movie_matches[i]["runtimeMinutes"] or ''), ', '.join(movie_matches[i]["genres"])))
+                    i += 1
+                else:
+                    end = True
+                    break
+            if not end:
+                input("\n*ENTER to show next 50 results...*\n")
 
         print("\n" + divider + "\n")
 
@@ -121,12 +130,24 @@ def task_1(db, name_basics, title_basics, title_ratings):
         votes = stats["numVotes"]
         print("\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
 
+        # Find cast/crew members from title_principals and name_basics
+        members = list(db.title_principals.aggregate([
+            {"$match": {"tconst": movie_matches[select - 1]["tconst"]}},
+            {"$lookup": {"from": "name_basics",
+                    "localField": "nconst",
+                    "foreignField": "nconst",
+                    "as": "name"
+                    }
+            }
+        ]))
+
         # Print list of cast/crew members, and associated characters
-        persons = [1, 2, 3]
-        print("\n{:^16}      {:^40}      {:^40}      {:^70} ".format("nconst", "Name", "Job", "Characters"))
-        print("-" * 16 + " " * 6 + "-" * 40 + " " * 6 + "-" * 40 + " " * 6 + "-" * 70)
-        for person in persons:
-            print("{:^16}      {:^40}      {:^40}      {:^70} ".format("nconst", "Name", "Job", "Characters"))
+        print("\n{:^16}      {:^40}      {:^70} ".format("nconst", "Name", "Characters"))
+        print("-" * 16 + " " * 6 + "-" * 40 + " " * 6 + "-" * 70)
+        for member in members:
+            if not member["characters"]:
+                member["characters"] = []
+            print("{:^16}      {:^40}      {:^70} ".format(member["nconst"], member["name"][0]["primaryName"], ', '.join(member["characters"])))
     else:
         print("\nNo matches!")
 
@@ -181,7 +202,7 @@ def task_2(db, title_basics, title_ratings):
             for x in range(50):
                 i += 1
                 if i < len(titles):
-                    print("{:^20}      {:60}      {:^10}      {:^14}".format(titles[i]["tconst"], str(titles[i]["primaryTitle"] or ''), 
+                    print("{:^20}      {:60}      {:^10}      {:^14}".format(titles[i]["tconst"][:20], str(titles[i]["primaryTitle"][:60] or ''), 
                     str(titles[i]["ratings"] or ''), str(titles[i]["numVotes"] or '')))
                 else:
                     end = True
@@ -210,9 +231,9 @@ def task_3(db, name_basics, title_basics, title_principals):
         print(divider)
         for person in persons:
             print("\nProfession Info\n")
-            print("{:^14}    {:^50}".format("nconst", "Professions"))
-            print("-" * 14 + " " * 4 + "-" * 50)
-            print("{:^14}    {:^50}".format(person["nconst"], ', '.join(person["primaryProfession"])))
+            print("{:^14}    {:^80}".format("nconst", "Professions"))
+            print("-" * 14 + " " * 4 + "-" * 80)
+            print("{:^14}    {:^80}".format(person["nconst"][:14], ', '.join(person["primaryProfession"])))
             print("\n")  
 
             # Find titles that cast member is in
@@ -231,12 +252,10 @@ def task_3(db, name_basics, title_basics, title_principals):
                 print("{:<70}      {:^14}      {:^30}      {:^40}".format("Primary Title", "tconst", "Job", "Characters"))
                 print("-" * 70 + " " * 6 + "-" * 14 + " " * 6 + "-" * 30 + " " * 6 + "-" * 40)
                 for title in titles:
-
-                    # If no job or character, don't show in output
-                    if title["characters"] or title["job"]:
-
-                        print("{:<70}      {:^14}      {:^30}      {:^40}".format(str(title["primaryTitle"][0]["primaryTitle"] or ''), 
-                        str(title["tconst"] or ''), str(title["job"] or ''), str(', '.join(title["characters"]) or [])))
+                    if not title["characters"]:
+                        title["characters"] = []
+                    print("{:<70}      {:^14}      {:^30}      {:^40}".format(str(title["primaryTitle"][0]["primaryTitle"][:70] or ''), 
+                    str(title["tconst"][:14] or ''), str(title["job"] or ''), str(', '.join(title["characters"]))))
             else: 
                 print("\nNot in any movies!")
 
