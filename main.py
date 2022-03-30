@@ -65,23 +65,32 @@ def task_2(db, title_basics, title_ratings):
         except ValueError:
             print("Please enter an integer.")
 
-    # Aggregate pipeline
+    # Aggregate pipeline to narrow down results
     titles = list(db.title_basics.aggregate([
+
+        # All movies with matching category case insensitive
         {"$match": {"genres": re.compile(genre, re.IGNORECASE)}},
+
+        # Join title_basics with title_ratings
         {"$lookup": {
                     "from": "title_ratings",
                     "localField": "tconst",
                     "foreignField": "tconst",
                     "as": "stats"}
         },
+
+        # Convert votes and average rating to ints/floats
         {"$project": {"_id": 0, "primaryTitle": 1, 
                     "ratings": {"$toDouble": {"$arrayElemAt": ["$stats.averageRating", 0]}}, 
                     "numVotes": {"$toInt": {"$arrayElemAt": ["$stats.numVotes", 0]}}}
         }, 
+
+        # Add votes constraint and sort
         {"$match": {"numVotes": {"$gt": count}}},
         {"$sort": {"ratings" : -1}}
     ]))
 
+    # Print titles, ratings, votes
     if titles:
         print("\n{:60}      {:^10}      {:^14}".format("Title", "Rating", "Votes"))
         print("-" * 60 + " " * 6 + "-" * 10 + " " * 6 + "-" * 14)
