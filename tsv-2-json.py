@@ -39,9 +39,8 @@ def tsv2json(input_file, output_file):
 
     # We will append all the individual dictionaries into list and dump into file
     with open(output_file, 'w', encoding='utf-8') as output_file:
-        for i in arr:
-            output_file.write(json.dumps(i))
-            output_file.write("\n")
+        output_file.write(json.dumps(arr))
+           
         
 
 # Driver Code
