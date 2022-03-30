@@ -1,5 +1,3 @@
-# Make MongoDB collection from the 4 .jsons
-# Port number input, connect to server, create 291db.db
 from pymongo import MongoClient 
 import json
 import os
