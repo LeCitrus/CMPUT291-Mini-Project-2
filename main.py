@@ -132,8 +132,21 @@ def task_2(db, title_basics, title_ratings):
         print("\n{:^20}      {:60}      {:^10}      {:^14}".format("tconst", "Title", "Rating", "Votes"))
         print("-" * 20 + " " * 6 + "-" * 60 + " " * 6 + "-" * 10 + " " * 6 + "-" * 14)
 
-        for title in titles:
-            print("{:^20}      {:60}      {:^10}      {:^14}".format(title["tconst"], title["primaryTitle"], title["ratings"], title["numVotes"]))
+        # Loop to paginate
+        i = 0
+        end = False
+        while not end:
+            for x in range(50):
+                i += 1
+                if i < len(titles):
+                    print("{:^20}      {:60}      {:^10}      {:^14}".format(titles[i]["tconst"], titles[i]["primaryTitle"], 
+                    titles[i]["ratings"], titles[i]["numVotes"]))
+                else:
+                    end = True
+                    break
+            if not end:
+                input("\n*ENTER to show next 50 results...\n")
+            
     else:
         print("\nNo movies fit these constraints!")
 
@@ -329,19 +342,19 @@ def main():
             quit("Goodbye!")
         elif task == 1:
             task_1(db, name_basics, title_basics, title_ratings)
-            input("\n*Enter key to go back*")
+            input("\n*ENTER key to go back*")
         elif task == 2:
             task_2(db, title_basics, title_ratings)
-            input("\n*Enter key to go back*")
+            input("\n*ENTER key to go back*")
         elif task == 3:
             task_3(db, name_basics, title_basics, title_principals)
-            input("\n*Enter key to go back*")
+            input("\n*ENTER key to go back*")
         elif task == 4:
             task_4(db, title_basics)
-            input("\n*Enter key to go back*")
+            input("\n*ENTER key to go back*")
         elif task == 5:
             task_5(db, name_basics, title_basics, title_principals)
-            input("\n*Enter key to go back*")
+            input("\n*ENTER key to go back*")
 
 
 if __name__ == "__main__":
