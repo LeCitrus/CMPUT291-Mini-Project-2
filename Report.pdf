@@ -1,52 +1,27 @@
-a) tsv-2-json.py converts the four tsv files into json files with the same names with .json. The function will eventually return the output file 
-with the exact same contents, but with "primaryProfession", "knownForTitles", "genres" and "characters" keys having its elements in a nested array. 
-The output file with return in the correct directory and be ready to load.
+a) Flowchart of our Overall Program
 
-load-json.py first asks for user input for the correct port number. It then sets up a connection with mongodb using pymongo and creates the four 
-collections (name_basics, etc), as well we drop the collections if they already exist. Finally, we take the converted json files and load them into
-mongodb. 
+https://app.diagrams.net/#G1W75FzY446wMuoAmsSoXpodGuGur1EBWl
 
-main.py has the simple query interface and all of phase 2 functionality. It gets a valid port number before going to the main menu.
-The main menu has 6 options: the 5 tasks and exit program. For each task, the user follows the input prompts, then after the output is
-printed the user presses enter to clear the screen and go back to the main menu. The main menu loops until the exit program option is selected.
+tsv-2-json.py: converts the four tsv files into json files with the same names as .json. The function will eventually return the output file  with the exact same contents, but with "primaryProfession", "knownForTitles", "genres" and "characters" keys having its elements in a nested array. The output file will return in the correct directory and be ready to load.
+load-json.py: first asks for user input for the correct port number. It then sets up a connection with mongodb using pymongo and creates the four collections (name_basics, etc), as well we drop the collections if they already exist. Finally, we take the converted json files and load them into mongodb. 
+main.py: has the simple query interface and all of phase 2 functionality. It gets a valid port number before going to the main menu. The main menu has 6 options: the 5 tasks and exit program. For each task, the user follows the input prompts, then after the output is printed the user presses enter to clear the screen and go back to the main menu. The main menu loops until the exit program option is selected.
 
-b) tsv-2-json.py: takes the four files in the correct directory and loops with input file into the tsv2json function. This function creates
-an array and strips each line in the file to create a dictionary of keys and values. For specific keys such as "primaryProfession" we used
-.split(',') to turn them into nested arrays. As well, we used .strip() to get rid of \n at the end of element lists.
+b) tsv-2-json.py: takes the four files in the correct directory and loops with the input file into the tsv2json function. This function creates an array and strips each line in the file to create a dictionary of keys and values. For specific keys such as "primaryProfession" we used .split(',') to turn them into nested arrays. As well, we used .strip() to get rid of \n at the end of element lists.
+load-json.py: the function starts by asking the user for a specific port number (the value accepted will be string). We use error handling to ensure the user enters an integer rather than characters. We use this value to connect to a specific mongodb port using MongoClient(). We then created the database and named it 291db. Then we create the collections in the database and drop them if they already exist. Then we open the json file and store it as a file. Once it is loaded, we then iterate through the created json object to insert each file as its own. Once the collection is fully integrated we exit and go to the next file.
+main.py: the main function begins by connecting to a valid mongoDB port, opening the correct database, and the 4 collections. It then enters the main_menu while loop. Main menu prompt clears the screen and lists the 6 options, prompting for input. 6 will break
+the loop and end the program. 
+task_1: the user provides a list of keywords. The program finds all the matching movie titles and lists them with number options on the side to select. Then the user provides a number to select a movie. Finally, the program finds rating/votes/cast member info and prints it.
+task_2: the user provides a given genre and minimum number of votes. The program then finds all movies with that genre and joins it with title_ratings, then applies the votes constraint. It prints out all the remaining movies with descending rating order.
+task_3: the user provides the cast/crew name. We then got a list of persons with matching names through find() in mongodb and r.IGNORECASE (for case insensitivity). Then we print and format all relevant information aggregate or string searching.
+task_4: the user provides the id (case sensitive), title, start year, running time, and list of genres of the movie they wish to add. We did error handling to ensure the user gives valid input. We made sure to use strip() to get used to empty spaces. We then added the movie details into mongodb through using insert_one(). 
+task_5: the user provides movie id and cast id, case-sensitive and makes sure they exist. Then they provide category input, and the program calculates highest ordering and adds 1. It then inserts the document into title_principals.
 
-load-json.py: the function starts by asking user for a specific port number (the value accepted will be string). We use error handling to ensure
-the user enters an integer rather than characters. We use this value to connect to a specific mongodb port using MongoClient(). We then created the 
-database and named it 291db. Then we create the collections in the database and drop them if they already exist. Then we open the json file and store 
-as file. Once it is loaded, we user insert_many() to insert into the mongodb collection. We repeat this process for all four collections and json files.
+c) tsv-2-json functionality: the main focus was to check if the .json files were being properly created and put in the correct directory/location. As well, we tested if the changes to the nested arrays were being made to the json files. As well, we tested to make sure there were no "/n" elements at the end of lists. As well, we timed how long the program would take (11 seconds~). 
+load-json functionality: the main focus was to check if the .json files were properly loaded into mongodb. We approached this through implementing the code in chunks and checking our mongodb database each time to check if changes were being made. As well, another roadblock we ran into was ensuring we could find the correct json files, we solved this through importing os and creating a file path. Another issue we ran into was duplicating collection data, we realized we had forgotten to drop our collections at the start, and solved the issue. 
+phase 2 functionality: by creating a small dataset manually with enough rows to provide informative output for tasks 3, 4, and 5. By then, phase 1 implementation was completed and we could use the full dataset to test functionality. Things like running efficiency, and correct output was tested compared with results from other group members. As well, we check if the queries in main.py created permanent changes in our mongodb database. 
 
-main.py: the main function begins by connecting to a valid mongoDB port, opening the correct database, and the 4 collections.
-It then enters the main_menu while loop. Main menu prompt clears screen and lists the 6 options, prompting for input. 6 will break
-the loop and end the program. 5 calls task_5(db, name_basics, title_basics, title_principals), which gets 
-
-c) tsv-2-json functionality: the main focus was to check if the .json files were being properly created
-and put in the correct directory/location. As well, we tested if the changes to the nested arrays were being made to the json files. As well,
-we tested to make sure there were no "/n" elements at the end of lists. As well, we timed how long the program would take (11 seconds~). 
-
-load-json functionality: the main focus was to check if the .json files were properly loaded into mongodb. We approached this through implementing
-the code in chunks and checking our mongodb database each time to check if changes were being made. As well, another road block we ran into was 
-ensuring we put could find the correct json files, we solved this through importing os and creating a file path. Another issue we ran into was duplicating
-collection data, we realised we had forgotten to drop our collections at the start, and solved the issue.
-
-phase 2 functionality: by creating a small dataset manually with enough
-rows to provide informative output for tasks 3, 4, and 5. 
-load-json.py
-
-
-d) Our group decided to split the project into 3 initial parts for the 3 members: each person worked on the 3 python files
-in phase 1 and phase 2. We maintained that whoever finished their part first would help with the other parts, particularly phase 2
-as that was the longest portion. 
-Curtis worked on Phase 2 functionality, including the 5 tasks and the simple query interface. It took 
-Clare worked on tsv-2-json.py, this section took about 3 hours to complete. After I finished tsv-2-json.py I helped with load-json.py and
-was responsible for error handling and reducing processing time.
-Seth worked on load-json.py
-
-Finally, the whole group spent 5 hours on the last day to combine, debug, and refine the project files, including the read me and
-report.pdf.
-We kept the project on track by assigning the roles 2 weeks ahead of the deadline, giving frequent updates on gmail chats on progress
-and problems. In the week that the project was due, we spent 10 hours on google meets to work on the project together so everyone
-was on the same page.
+d) Our group decided to split the project into 3 initial parts for the 3 members: each person worked on the 3 python files in phase 1 and phase 2. We maintained that whoever finished their part first would help with the other parts, particularly phase 2 as that was the longest portion. 
+- Curtis worked on Phase 2 functionality, including the 5 tasks and the simple query interface. It took a combined total of 10 hours to complete, with the help of Clare and Seth.
+- Clare worked on tsv-2-json.py, this section took about 4 hours to complete. After she finished tsv-2-json.py, she helped with load-json.py and was responsible for error handling and reducing processing time, which took 2 hours. Finally, she helped complete task 1, which took 3 hours. 
+- Seth worked on load-json.py, this section took about 4 hours to complete after he was done he then helped on task 1 and task 2 of phase 2, which took 5 hours. 
+Finally, the whole group spent 5 hours on the last day to combine, debug, and refine the project files, including readme.txt and report.pdf. We kept the project on track by assigning the roles 2 weeks ahead of the deadline, giving frequent updates on gmail chats on progress and problems. In the week that the project was due, we spent 10 hours of collaborative work on google meets to work on the project together so everyone was on the same page.
