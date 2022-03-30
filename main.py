@@ -48,9 +48,46 @@ def get_task():
 # Search for titles
 def task_1(db, name_basics, title_basics, title_ratings):
     os.system(clr)
-    keywords = list(input("Enter 1 or more keywords, separated by spaces (eg. cmput MaTh DAVOOD): ").split())
-    print('pog')
 
+    # Get list of keywords
+    keywords = list(input("Enter 1 or more keywords, separated by spaces (eg. cmput MaTh DAVOOD): ").split())
+
+    # Print movie matches table
+    print("\nMovie matches")
+    print("\n    {:^14}      {:^10}      {:^40}      {:^40}      {:^8}      {:^14}      {:^14}      {:^20}      {:^14}".format("tconst", 
+    "titleType", "primaryTitle", "originalTitle", "isAdult", "startYear", "endYear", "runtimeMinutes", "genres"))
+    print("    " + "-" * 14 + " " * 6 + "-" * 10 + " " * 6 + "-" * 40 + " " * 6 + "-" * 40 + " " * 6 + "-" * 8 + " " * 6 + "-" * 14 +
+    " " * 6 + "-" * 14 + " " * 6 + "-" * 20 + " " * 6 + "-" * 14)
+    for i in range(1, len(keywords) + 1):
+        print("{:<3} {:^14}      {:^10}      {:^40}      {:^40}      {:^8}      {:^14}      {:^14}      {:^20}      {:^14}".format(i, 
+        "tconst", "titleType", "primaryTitle", "originalTitle", "isAdult", "startYear", "endYear", "runtimeMinutes", "genres"))
+        
+    movies = len(keywords)
+    print("\n" + divider + "\n")
+
+    # Prompt for title select
+    while True:
+        try:
+            select = int(input("Select a movie: "))
+            if 1 <= select <= movies:
+                break
+            print("Invalid option!")
+        except ValueError:
+            print("Please enter an integer.")
+
+    # Print rating and number votes
+    rating = 0
+    votes = 0
+    print("\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
+
+    # Print cast members and characters
+    persons = [1, 2, 3]
+    print("\n{:^16}      {:^40}      {:^40}      {:^50} ".format("nconst", "Name", "Job", "Characters"))
+    print("-" * 16 + " " * 6 + "-" * 40 + " " * 6 + "-" * 40 + " " * 6 + "-" * 50)
+    for person in persons:
+        print("{:^16}      {:^40}      {:^40}      {:^50} ".format("nconst", "Name", "Job", "Characters"))
+
+    # Print list of cast/crew members, and associated characters
 
 # Search for genres
 def task_2(db, title_basics, title_ratings):
