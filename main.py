@@ -149,7 +149,7 @@ def task_1(db, name_basics, title_basics, title_ratings):
             # Print rating and number votes
             rating = stats["averageRating"]
             votes = stats["numVotes"]
-            print("\n" + movie_matches[select - 1]["primaryTitle"] + "\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
+            print("\n" + movie_matches[select - 1]["primaryTitle"] + "\n-----------------\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
 
             # Find cast/crew members from title_principals and name_basics
             members = list(db.title_principals.aggregate([
