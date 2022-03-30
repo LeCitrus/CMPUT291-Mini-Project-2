@@ -51,106 +51,106 @@ def task_1(db, name_basics, title_basics, title_ratings):
 
     # Get list of keywords
     keywords = list(input("Enter 1 or more keywords, separated by spaces (eg. cmput MaTh DAVOOD): ").split())
+
     # Adds all ints to year checker just incase someone decides a title has numbers and year
     keywords_ints=[]
     keywords_reg=""
     keyints_reg=""
+    
     if len(keywords) > 0:
-        for x in range(0, len(keywords)):
-
-            # Adds the white spaces so that it only pulls up one word eg: unwanted != wanted adds the white space to avoid this
-
-            if isinstance(keywords[x],int):
+        for x in range(0,len(keywords)):
+            # Add regex statements so it gets each elements
+            if keywords[x].isdigit():
+                #int_local.append(x)
                 keywords_ints.append("(%s)"%(keywords[x]))
             else:
-                keywords[x] = "(%s)"%(keywords[x])
+                keywords[x] = "(?=.*\\b%s\\b)"%(keywords[x])
 
         # If there are items in the list then we do some regex magic and make it so any keyword will return a search results
 
-        keywords_reg = '&'.join(keywords)
-        keyints_reg  = '&'.join(keywords_ints)
+        keywords_reg = ''.join(keywords)
+        keyints_reg  = '|'.join(keywords_ints)
 
-        keywords_reg = "(?i)" + keywords_reg
-        keyints_reg = "(?i)" + keyints_reg
+        keywords_reg = "(?i)^" + keywords_reg + ".+" 
 
-    # pipeline match the for both start year and primaryTitle
+        # Pipeline match the for both start year and primaryTitle
 
-    agg_pipe = [
-            {"$match" : {"primaryTitle" : {"$regex" : keywords_reg }}},
-            {"$match" : {"startYear" : {"$regex" : keyints_reg}}},
-            {"$sort" : {"tconst" : 1}}
-            ]
+        agg_pipe = [
+                {"$match" : {"primaryTitle" : {"$regex" : keywords_reg }}},
+                {"$match" : {"startYear" : {"$regex" : keyints_reg}}},
+                ]
 
-    movie_matches = list(title_basics.aggregate(agg_pipe))
+        movie_matches = list(title_basics.aggregate(agg_pipe))
 
-    # If there are movies in search
-    if len(movie_matches):
+        # If there are movies in search
+        if len(movie_matches):
 
-        # Print movie matches table
-        print("\nMovie matches")
-        print("\n    {:^14}    {:^10}    {:^40}    {:^40}    {:^8}    {:^10}    {:^10}    {:^16}    {:^46}".format("tconst", 
-        "titleType", "primaryTitle", "originalTitle", "isAdult", "startYear", "endYear", "runtimeMinutes", "genres"))
-        print("    " + "-" * 14 + " " * 4 + "-" * 10 + " " * 4 + "-" * 40 + " " * 4 + "-" * 40 + " " * 4 + "-" * 8 + " " * 4 + "-" * 10 +
-        " " * 4 + "-" * 10 + " " * 4 + "-" * 16 + " " * 4 + "-" * 46)
-        
-        # Paginate movie results
-        i = 1
-        end = False
-        while not end:
-            for x in range(50):
-                if i < len(movie_matches):
-                    print("{:<3} {:^14}    {:^10}    {:<40}    {:<40}    {:^8}    {:^10}    {:^10}    {:^16}    {:<46}".format(i, 
-                    str(movie_matches[i]["tconst"][:14] or ''), str(movie_matches[i]["titleType"][:10] or ''), str(movie_matches[i]["primaryTitle"][:40] or ''), 
-                    str(movie_matches[i]["originalTitle"][:40] or ''), str(movie_matches[i]["isAdult"[:8]] or '') , str(movie_matches[i]["startYear"] or ''), 
-                    str(movie_matches[i]["endYear"] or ''), str(movie_matches[i]["runtimeMinutes"] or ''), ', '.join(movie_matches[i]["genres"])))
-                    i += 1
-                else:
-                    end = True
-                    break
-            if not end:
-                input("\n*ENTER to show next 50 results...*\n")
+            # Print movie matches table
+            print("\nMovie matches")
+            print("\n    {:^14}    {:^10}    {:^40}    {:^40}    {:^8}    {:^10}    {:^10}    {:^16}    {:^46}".format("tconst", 
+            "titleType", "primaryTitle", "originalTitle", "isAdult", "startYear", "endYear", "runtimeMinutes", "genres"))
+            print("    " + "-" * 14 + " " * 4 + "-" * 10 + " " * 4 + "-" * 40 + " " * 4 + "-" * 40 + " " * 4 + "-" * 8 + " " * 4 + "-" * 10 +
+            " " * 4 + "-" * 10 + " " * 4 + "-" * 16 + " " * 4 + "-" * 46)
+            
+            # Paginate movie results
+            i = 0
+            end = False
+            while not end:
+                for x in range(50):
+                    if i < len(movie_matches):
+                        print("{:<3} {:^14}    {:^10}    {:<40}    {:<40}    {:^8}    {:^10}    {:^10}    {:^16}    {:<46}".format(i + 1, 
+                        str(movie_matches[i]["tconst"][:14] or ''), str(movie_matches[i]["titleType"][:10] or ''), str(movie_matches[i]["primaryTitle"][:40] or ''), 
+                        str(movie_matches[i]["originalTitle"][:40] or ''), str(movie_matches[i]["isAdult"[:8]] or '') , str(movie_matches[i]["startYear"] or ''), 
+                        str(movie_matches[i]["endYear"] or ''), str(movie_matches[i]["runtimeMinutes"] or ''), ', '.join(movie_matches[i]["genres"])))
+                        i += 1
+                    else:
+                        end = True
+                        break
+                if not end:
+                    input("\n*ENTER to show next 50 results...*\n")
 
-        print("\n" + divider + "\n")
+            print("\n" + divider + "\n")
 
-        # Prompt for title select
-        while True:
-            try:
-                select = int(input("Select a movie: "))
-                if 1 <= select <= len(movie_matches):
-                    break
-                print("Invalid option!")
-            except ValueError:
-                print("Please enter an integer.")
+            # Prompt for title select
+            while True:
+                try:
+                    select = int(input("Select a movie: "))
+                    if 1 <= select <= len(movie_matches):
+                        break
+                    print("Invalid option!")
+                except ValueError:
+                    print("Please enter an integer.")
 
-        # Find rating and number votes from title_ratings
-        stats = db.title_ratings.find_one({"tconst": movie_matches[select - 1]["tconst"]}, {"_id": 0, "tconst": 0})
+            # Find rating and number votes from title_ratings
+            stats = db.title_ratings.find_one({"tconst": movie_matches[select - 1]["tconst"]}, {"_id": 0, "tconst": 0})
 
-        # Print rating and number votes
-        rating = stats["averageRating"]
-        votes = stats["numVotes"]
-        print("\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
+            # Print rating and number votes
+            rating = stats["averageRating"]
+            votes = stats["numVotes"]
+            print("\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
 
-        # Find cast/crew members from title_principals and name_basics
-        members = list(db.title_principals.aggregate([
-            {"$match": {"tconst": movie_matches[select - 1]["tconst"]}},
-            {"$lookup": {"from": "name_basics",
-                    "localField": "nconst",
-                    "foreignField": "nconst",
-                    "as": "name"
-                    }
-            }
-        ]))
+            # Find cast/crew members from title_principals and name_basics
+            members = list(db.title_principals.aggregate([
+                {"$match": {"tconst": movie_matches[select - 1]["tconst"]}},
+                {"$lookup": {"from": "name_basics",
+                        "localField": "nconst",
+                        "foreignField": "nconst",
+                        "as": "name"
+                        }
+                }
+            ]))
 
-        # Print list of cast/crew members, and associated characters
-        print("\n{:^16}      {:^40}      {:^70} ".format("nconst", "Name", "Characters"))
-        print("-" * 16 + " " * 6 + "-" * 40 + " " * 6 + "-" * 70)
-        for member in members:
-            if not member["characters"]:
-                member["characters"] = []
-            print("{:^16}      {:^40}      {:^70} ".format(member["nconst"], member["name"][0]["primaryName"], ', '.join(member["characters"])))
-    else:
+            # Print list of cast/crew members, and associated characters
+            print("\n{:^16}      {:^40}      {:^70} ".format("nconst", "Name", "Characters"))
+            print("-" * 16 + " " * 6 + "-" * 40 + " " * 6 + "-" * 70)
+            for member in members:
+                if not member["characters"]:
+                    member["characters"] = []
+                print("{:^16}      {:^40}      {:^70} ".format(member["nconst"], member["name"][0]["primaryName"], ', '.join(member["characters"])))
+        else:
+            print("\nNo matches!")
+    else: 
         print("\nNo matches!")
-
 
 # Search for genres
 def task_2(db, title_basics, title_ratings):
@@ -200,10 +200,10 @@ def task_2(db, title_basics, title_ratings):
         end = False
         while not end:
             for x in range(50):
-                i += 1
                 if i < len(titles):
                     print("{:^20}      {:60}      {:^10}      {:^14}".format(titles[i]["tconst"][:20], str(titles[i]["primaryTitle"][:60] or ''), 
                     str(titles[i]["ratings"] or ''), str(titles[i]["numVotes"] or '')))
+                    i += 1
                 else:
                     end = True
                     break
