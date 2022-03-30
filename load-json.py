@@ -43,7 +43,6 @@ def main(myclient):
         name_basics.insert_many(file_data) 
         print("file opened")
     except: # catch in case api is not high enough then use insert_one
-        clear_collections(name_basics, title_basics, title_principals, title_ratings)
         for i in file_data:
             name_basics.insert_one(i)
             print("file opened")
@@ -55,7 +54,6 @@ def main(myclient):
         title_basics.insert_many(file_data) 
         print("file opened")
     except: 
-        clear_collections(name_basics, title_basics, title_principals, title_ratings)
         for i in file_data:
             title_basics.insert_one(i)
             print("file opened")
@@ -67,7 +65,6 @@ def main(myclient):
         title_principals.insert_many(file_data) 
         print("file opened")
     except: 
-        clear_collections(name_basics, title_basics, title_principals, title_ratings)
         for i in file_data:
             title_principals.insert_one(i)
             print("file opened")
@@ -79,7 +76,6 @@ def main(myclient):
         title_ratings.insert_many(file_data) 
         print("file opened")
     except: 
-        clear_collections(name_basics, title_basics, title_principals, title_ratings)
         for i in file_data:
             title_ratings.insert_one(i)
             print("file opened")
