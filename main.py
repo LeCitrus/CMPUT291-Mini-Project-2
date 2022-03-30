@@ -127,7 +127,8 @@ def task_1(db, name_basics, title_basics, title_ratings):
             # Print rating and number votes
             rating = stats["averageRating"]
             votes = stats["numVotes"]
-            print("\nRating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
+            print("\n" + movie_matches[select - 1]["primaryTitle"] + "\n----------------------")
+            print("Rating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
 
             # Find cast/crew members from title_principals and name_basics
             members = list(db.title_principals.aggregate([
@@ -150,7 +151,7 @@ def task_1(db, name_basics, title_basics, title_ratings):
         else:
             print("\nNo matches!")
     else: 
-        print("\nNo matches!")
+        print("\nNo keywords!")
 
 # Search for genres
 def task_2(db, title_basics, title_ratings):
