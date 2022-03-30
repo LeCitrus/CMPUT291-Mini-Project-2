@@ -61,9 +61,12 @@ def main():
     dir_path + '/title.ratings.json']
 
     for i in range(4):
+        
         input_filename = files_in[i]
         output_filename = files_out[i]
+        print("Converting", input_filename, "to JSON...")
         tsv2json(input_filename, output_filename)
 
+    print("Done!")
 if __name__ == "__main__":
     main()
