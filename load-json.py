@@ -1,5 +1,3 @@
-# Make MongoDB collection from the 4 .jsons
-# Port number input, connect to server, create 291db.db
 from pymongo import MongoClient 
 import json
 import os
@@ -22,8 +20,16 @@ def connector(port):
     else:
         myclient = MongoClient("mongodb://localhost:"+port+'/') 
         return myclient
+   
 
-
+def clear_collections(name_basics, title_basics, title_principals, title_ratings):
+    # drops all collections
+    # for demo
+    name_basics.drop()
+    title_basics.drop()
+    title_principals.drop()
+    title_ratings.drop()
+   
 def main(myclient):  
     # database 
     db = myclient["291db"]   
@@ -37,24 +43,28 @@ def main(myclient):
     clear_collections(name_basics, title_basics, title_principals, title_ratings)
 
     # Loading / Opening the json file
+    print("Loading name.basics.json...")
     with open(dir_path+'/name.basics.json') as file:
         file_data = json.load(file)
     name_basics.insert_many(file_data) 
     print("file opened") 
     file.close()
 
+    print("Loading title.basics.json...")
     with open(dir_path+'/title.basics.json') as file:
         file_data = json.load(file)
     title_basics.insert_many(file_data) 
     print("file opened") 
     file.close()
 
+    print("Loading title.principals.json...")
     with open(dir_path+'/title.principals.json') as file:
         file_data = json.load(file)
     title_principals.insert_many(file_data)  
     print("file opened")
     file.close()
 
+    print("Loading title.ratings.json...")
     with open(dir_path+'/title.ratings.json') as file:
         file_data = json.load(file)
     title_ratings.insert_many(file_data)  
@@ -67,14 +77,6 @@ def main(myclient):
     db['name_basics'].create_index('nconst')
     db['title_principals'].create_index('nconst')
     db['title_principals'].create_index('tconst')
-
-def clear_collections(name_basics, title_basics, title_principals, title_ratings):
-    # drops all collections
-    # for demo
-    name_basics.drop()
-    title_basics.drop()
-    title_principals.drop()
-    title_ratings.drop()
 
 if __name__ == "__main__":
     myclient = connector(port)
