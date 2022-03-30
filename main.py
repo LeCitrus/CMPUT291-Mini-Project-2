@@ -55,8 +55,9 @@ def task_1(db, name_basics, title_basics, title_ratings):
 # Search for genres
 def task_2(db, title_basics, title_ratings):
     os.system(clr)
-    genre = input("Enter genre: ").strip()
+    genre = "^" + input("Enter genre: ").strip() + "$"
 
+    # Get valid votes of int
     while True:
         try:
             count = int(input("Enter minimum vote count: ").strip())
@@ -64,9 +65,32 @@ def task_2(db, title_basics, title_ratings):
         except ValueError:
             print("Please enter an integer.")
 
-    titles = db.title_basics.find({"genres": {"$elemMatch": {"$regex": genre, "$options": "i"}}}, {"_id": 0})    
-    for title in titles:
-        print(title)
+    # Aggregate pipeline
+    titles = list(db.title_basics.aggregate([
+        {"$match": {"genres": re.compile(genre, re.IGNORECASE)}},
+        {"$lookup": {
+                    "from": "title_ratings",
+                    "localField": "tconst",
+                    "foreignField": "tconst",
+                    "as": "stats"}
+        },
+        {"$project": {"_id": 0, "primaryTitle": 1, 
+                    "ratings": {"$toDouble": {"$arrayElemAt": ["$stats.averageRating", 0]}}, 
+                    "numVotes": {"$toInt": {"$arrayElemAt": ["$stats.numVotes", 0]}}}
+        }, 
+        {"$match": {"numVotes": {"$gt": count}}},
+        {"$sort": {"ratings" : -1}}
+    ]))
+
+    if titles:
+        print("\n{:60}      {:^10}      {:^14}".format("Title", "Rating", "Votes"))
+        print("-" * 60 + " " * 6 + "-" * 10 + " " * 6 + "-" * 14)
+
+        for title in titles:
+            print("{:60}      {:^10}      {:^14}".format(title["primaryTitle"], title["ratings"], title["numVotes"]))
+    else:
+        print("\nNo movies fit these constraints!")
+
 
 # Search for cast/crew members
 def task_3(db, name_basics, title_basics, title_principals):
@@ -77,7 +101,7 @@ def task_3(db, name_basics, title_basics, title_principals):
     persons = list(db.name_basics.find({"primaryName": re.compile(name, re.IGNORECASE)}, {"_id": 0, "primaryProfession": 1, "nconst": 1}))
 
     if not persons:
-        print("No names found!")
+        print("\nNo names found!")
 
     else:
 
