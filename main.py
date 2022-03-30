@@ -56,32 +56,54 @@ def task_1(db, name_basics, title_basics, title_ratings):
     keywords_ints=[]
     keywords_reg=""
     keyints_reg=""
+    int_finder=[]
     
     if len(keywords) > 0:
         for x in range(0,len(keywords)):
             # Add regex statements so it gets each elements
             if keywords[x].isdigit():
-                #int_local.append(x)
-                keywords_ints.append("(%s)"%(keywords[x]))
+                int_finder.append(x) 
+                keywords_ints.append("%s"%(keywords[x]))
             else:
                 keywords[x] = "(?=.*\\b%s\\b)"%(keywords[x])
-
+        for x in range(len(int_finder)-1,-1,-1):
+            keywords.pop(int_finder[x])
+            
         # If there are items in the list then we do some regex magic and make it so any keyword will return a search results
 
         keywords_reg = ''.join(keywords)
-        keyints_reg  = '|'.join(keywords_ints)
+        keyints_reg  = ''.join(keywords_ints)
 
-        keywords_reg = "(?i)^" + keywords_reg + ".+" 
+        keywords_reg = "(?i)^" + keywords_reg + ".+"
 
         # Pipeline match the for both start year and primaryTitle
 
-        agg_pipe = [
+        agg_pipe_q1 = [
                 {"$match" : {"primaryTitle" : {"$regex" : keywords_reg }}},
-                {"$match" : {"startYear" : {"$regex" : keyints_reg}}},
+                {"$match" : {"startYear" : {"$regex" : keyints_reg}}}
                 ]
 
-        movie_matches = list(title_basics.aggregate(agg_pipe))
+        keywords_reg_yrt = keywords_reg[0:-2] + "(?=.*\\b%s\\b)"%keyints_reg+".+"
 
+        agg_pipe_final = [
+                {"$match" : {"primaryTitle" : {"$regex" : keywords_reg_yrt}}},
+                {"$unionWith" : {"coll" : "title_basics","pipeline":agg_pipe_q1}},
+                {"$group" : {
+                    "_id" : "$tconst",
+                    "tconst" :        {"$first":  "$tconst"},
+                    "titleType" :     {"$first":  "$titleType"},
+                    "primaryTitle" :  {"$first":  "$primaryTitle"},
+                    "originalTitle" : {"$first":  "$originalTitle"},
+                    "isAdult" :       {"$first":  "$isAdult"},
+                    "startYear" :     {"$first":  "$startYear"},
+                    "endYear" :       {"$first":  "$endYear"},
+                    "runtimeMinutes" :{"$first":  "$runtimeMinutes"},
+                    "genres" :        {"$first":  "$genres"}
+                    }},
+                {"$unset":"_id"}
+                ]
+
+        movie_matches = list(title_basics.aggregate(agg_pipe_final))
         # If there are movies in search
         if len(movie_matches):
 
@@ -127,8 +149,8 @@ def task_1(db, name_basics, title_basics, title_ratings):
             # Print rating and number votes
             rating = stats["averageRating"]
             votes = stats["numVotes"]
-            print("\n" + movie_matches[select - 1]["primaryTitle"] + "\n----------------------")
-            print("Rating:", rating, "\nNumber of Votes:", votes, "\n\nCast/crew members")
+            print("\n" + movie_matches[select - 1]["primaryTitle"] + "\n--------------\nRating:", rating, 
+            "\nNumber of Votes:", votes, "\n\nCast/crew members")
 
             # Find cast/crew members from title_principals and name_basics
             members = list(db.title_principals.aggregate([
@@ -151,7 +173,7 @@ def task_1(db, name_basics, title_basics, title_ratings):
         else:
             print("\nNo matches!")
     else: 
-        print("\nNo keywords!")
+        print("\nNo matches!")
 
 # Search for genres
 def task_2(db, title_basics, title_ratings):
