@@ -1,25 +1,57 @@
 # Make MongoDB collection from the 4 .jsons
 # Port number input, connect to server, create 291db.db
-from pymongo import MongoClient
 import json
+from pymongo import MongoClient 
+import os
 
-client = MongoClient("localhost", 27012)
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
-db = client["291db"]
+while True:
+   try:
+        port = input("Enter port number: ")
+        break
+   except ValueError:
+        print("Invalid input!")
 
-name_basics = db["name_basics"]
-title_basics = db["title_basics"]
-title_principals = db["title_principals"]
-title_ratings = db["title_ratings"]
+# Making Connection
+myclient = MongoClient("mongodb://localhost:"+port+'/') 
+   
+def main():  
 
-def clear_collections():
+    # database 
+    db = myclient["291db"]   
+    # Created or Switched to collection 
+    # names: GeeksForGeeks
+    name_basics = db["name_basics"]
+    title_basics = db["title_basics"]
+    title_principals = db["title_principals"]
+    title_ratings = db["title_ratings"]
+
     name_basics.drop()
     title_basics.drop()
     title_principals.drop()
     title_ratings.drop()
-while True:
-   try:
-        port = int(input("Enter port number: "))
-        break
-   except ValueError:
-        print("Invalid input!")
+
+    # Loading or Opening the json file
+    with open(dir_path+'/name.basics.json') as file:
+        file_data = json.load(file)
+    name_basics.insert_many(file_data)  
+    file.close()
+
+    with open(dir_path+'/title.basics.json') as file:
+        file_data = json.load(file)
+    title_basics.insert_many(file_data)  
+    file.close()
+
+    with open(dir_path+'/title.principals.json') as file:
+        file_data = json.load(file)
+    title_principals.insert_many(file_data)  
+    file.close()
+
+    with open(dir_path+'/title.ratings.json') as file:
+        file_data = json.load(file)
+    title_ratings.insert_many(file_data)  
+    file.close()
+
+if __name__ == "__main__":
+    main()
