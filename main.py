@@ -61,7 +61,7 @@ def task_1(db, name_basics, title_basics, title_ratings):
     for i in range(1, len(keywords) + 1):
         print("{:<3} {:^14}      {:^10}      {:^40}      {:^40}      {:^8}      {:^14}      {:^14}      {:^20}      {:^14}".format(i, 
         "tconst", "titleType", "primaryTitle", "originalTitle", "isAdult", "startYear", "endYear", "runtimeMinutes", "genres"))
-        
+
     movies = len(keywords)
     print("\n" + divider + "\n")
 
@@ -117,7 +117,7 @@ def task_2(db, title_basics, title_ratings):
         },
 
         # Convert votes and average rating to ints/floats
-        {"$project": {"_id": 0, "primaryTitle": 1, 
+        {"$project": {"_id": 0, "tconst": 1,"primaryTitle": 1, 
                     "ratings": {"$toDouble": {"$arrayElemAt": ["$stats.averageRating", 0]}}, 
                     "numVotes": {"$toInt": {"$arrayElemAt": ["$stats.numVotes", 0]}}}
         }, 
@@ -129,11 +129,11 @@ def task_2(db, title_basics, title_ratings):
 
     # Print titles, ratings, votes
     if titles:
-        print("\n{:60}      {:^10}      {:^14}".format("Title", "Rating", "Votes"))
-        print("-" * 60 + " " * 6 + "-" * 10 + " " * 6 + "-" * 14)
+        print("\n{:^20}      {:60}      {:^10}      {:^14}".format("tconst", "Title", "Rating", "Votes"))
+        print("-" * 20 + " " * 6 + "-" * 60 + " " * 6 + "-" * 10 + " " * 6 + "-" * 14)
 
         for title in titles:
-            print("{:60}      {:^10}      {:^14}".format(title["primaryTitle"], title["ratings"], title["numVotes"]))
+            print("{:^20}      {:60}      {:^10}      {:^14}".format(title["tconst"], title["primaryTitle"], title["ratings"], title["numVotes"]))
     else:
         print("\nNo movies fit these constraints!")
 
