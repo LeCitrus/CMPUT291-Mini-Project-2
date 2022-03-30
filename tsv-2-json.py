@@ -22,7 +22,7 @@ def tsv2json(input_file, output_file):
                     row[key] = value.strip(' \n').split(',')
 
                 else:
-                    row[key] = value.strip('\n "[]').split(',')
+                    row[key] = value.strip('\n "[]').split('","')
 
                 if row[key][0] == '\\N':
                     row[key] = None
