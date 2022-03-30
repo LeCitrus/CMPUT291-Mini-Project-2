@@ -19,10 +19,17 @@ def tsv2json(input_file, output_file):
             # Convert each row into dictionary with keys as titles
             # Nested Arrays
             if key in ("primaryProfession", "knownForTitles", "genres", "characters"):
-                row[key] = value.strip().split(',')
+                if key in ("primaryProfession", "knownForTitles", "genres"):
+                    row[key] = value.strip(' \n').split(',')
+
+                else:
+                    row[key] = value.strip('\n "[]').split(',')
+
+                if row[key][0] == '\\N':
+                    row[key] = None
 
             # NULL values
-            elif value == r"\N":
+            elif value == '\\N':
                 row[key] = None 
             else:
                 row[key] = value.strip()
